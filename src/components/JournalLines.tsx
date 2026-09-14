@@ -7,8 +7,8 @@ interface JournalLinesProps {
 }
 
 export const JournalLines: React.FC<JournalLinesProps> = ({ content }) => {
-  // 32 usable spaces
   const usableLinesCount = 32;
+  const hasContent = content.length > 0; // In a filler page, we might not render closing
 
   return (
     <div id="journal-lines-container" style={{
@@ -61,7 +61,7 @@ export const JournalLines: React.FC<JournalLinesProps> = ({ content }) => {
           <div key={`p-${index}`} style={{ textAlign: 'left' }}>{paragraph}</div>
         ))}
 
-        <JournalClosing />
+        {hasContent && <JournalClosing />}
       </div>
     </div>
   );

@@ -1,3 +1,9 @@
+:root {
+  /* Elegant Stationery Cover Theme */
+  --cover-background: #6C5B7B; /* Sophisticated muted violet/purple */
+  --cover-text: #FFFFFF;
+}
+
 /* General Reset */
 * {
   box-sizing: border-box;
@@ -27,6 +33,22 @@ body {
   width: 100%;
 }
 
+/* Container to scale down large fixed physical pages on small screens, ensuring actual dimensions remain fixed */
+.responsive-scale-wrapper {
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+@media screen and (max-width: 600px) {
+  .responsive-scale-wrapper {
+    /* Rough scale down to fit smaller screens visually, but physical CSS remains 15cm */
+    transform: scale(0.65);
+    transform-origin: top center;
+    margin-bottom: -7.5cm; /* collapse scaled whitespace */
+  }
+}
+
 .journal-physical-page {
   background-color: white;
   width: 15cm;
@@ -40,6 +62,14 @@ body {
   /* Strict sizing */
 }
 
+/* Cover styling utilizing theme variables */
+.journal-cover-page {
+  background-color: var(--cover-background);
+  color: var(--cover-text);
+  /* Force browsers to print the background color */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
 
 /* Signature Manual Positioning */
 .signature-image {

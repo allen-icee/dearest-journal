@@ -23,6 +23,12 @@
     display: block !important;
   }
 
+  .responsive-scale-wrapper {
+    /* Strip visual scaling transforms for actual printing */
+    transform: none !important;
+    margin: 0 !important;
+  }
+
   /* Ensure the journal pages break correctly and have no shadow */
   .journal-physical-page {
     box-shadow: none !important;
@@ -34,5 +40,10 @@
     padding: 0 !important;
     position: relative !important;
     box-sizing: border-box !important;
+  }
+
+  .journal-cover-page {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }

@@ -16,8 +16,23 @@ export const JOURNAL_METRICS: JournalPageMetrics = {
   totalLines: 32,
 };
 
+export const MAX_INTERIOR_PAGES = 32;
+
+export interface JournalPageData {
+  pageNumber: number;
+  date?: string; // MM-DD-YYYY if dated, otherwise undefined for filler
+  content: string[]; 
+}
+
+export interface JournalDocument {
+  month: number; // 1-12
+  year: number;
+  pages: JournalPageData[]; // Exactly 32 items
+}
+
+// Deprecated Phase 1 interface
 export interface JournalEntry {
   id: string;
-  date: string; // MM-DD-YYYY
-  content: string[]; // Array of strings where each string might represent a paragraph or line, depending on Phase 2 implementation. For Phase 1 we will pass it simply as text.
+  date: string;
+  content: string[];
 }

@@ -13,9 +13,10 @@ export const JournalHeader: React.FC<JournalHeaderProps> = ({ date }) => {
       justifyContent: 'flex-end',
       alignItems: 'flex-end',
       paddingRight: '0.5cm', 
-      paddingBottom: '0.1cm',
       fontSize: '0.6cm',
-      color: 'black'
+      color: 'black',
+      position: 'relative',
+      top: '0.45cm', // Pulls the text downwards across the top-spacing gap to sit near the line
     }}>
       {date}
     </div>
