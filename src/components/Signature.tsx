@@ -1,11 +1,22 @@
 import React from 'react';
+import { type JournalConfig } from '../types/journalConfig';
 
-export const Signature: React.FC = () => {
+interface SignatureProps {
+  config: JournalConfig;
+}
+
+export const Signature: React.FC<SignatureProps> = ({ config }) => {
   return (
     <img 
-      src="/signature/OI-DigitalSignature-Icee.png" 
+      src={config.signature.image} 
       alt="Signature" 
       className="signature-image"
+      style={{
+        opacity: config.signature.opacity,
+        width: config.signature.width,
+        right: config.signature.offsetX,
+        top: config.signature.offsetY
+      }}
     />
   );
 };

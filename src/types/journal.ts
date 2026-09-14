@@ -22,10 +22,14 @@ export interface JournalPageData {
   content: string; // HTML rich text content
 }
 
+import { type JournalConfig } from './journalConfig';
+
 export interface JournalDocument {
   month: number;
   year: number;
   pages: JournalPageData[]; // Exactly 32 items
+  coverColor?: string; // Deprecated: use config.frontCover.color
+  config?: JournalConfig;
 }
 
 // Deprecated Phase 1 interface

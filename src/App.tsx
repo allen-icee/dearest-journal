@@ -10,6 +10,7 @@ import { type SaveStatus } from './storage/storageTypes';
 import { exportJournal, importJournal } from './utils/backup';
 import { useToast } from './hooks/useToast';
 import { ConfirmDialog } from './components/ui/ConfirmDialog';
+import { DEFAULT_JOURNAL_CONFIG } from './config/journalDefaults';
 
 function App() {
   const [document, setDocument] = useState<JournalDocument | null>(null);
@@ -195,13 +196,17 @@ function App() {
           onContentChange={handleContentChange}
           onImport={handleImportClick}
           onExport={handleExport}
+          onDocumentChange={(updatedDoc) => {
+            setDocument(updatedDoc);
+            setSaveStatus('unsaved');
+          }}
         />
       </div>
 
       {/* The Actual Printed Notebook Document (Hidden on screen) */}
       <div className="print-only">
         {/* 1. Front Cover */}
-        <JournalCover month={document.month} year={document.year} />
+        <JournalCover month={document.month} year={document.year} config={document.config} />
 
         {/* 2. Interior Pages (Exactly 32 slots) */}
         {document.pages.map((pageData) => (
@@ -209,11 +214,12 @@ function App() {
             key={`print-page-${pageData.pageNumber}`}
             date={pageData.date} 
             content={pageData.content} 
+            config={document.config || DEFAULT_JOURNAL_CONFIG}
           />
         ))}
 
         {/* 3. Back Cover */}
-        <JournalBackCover />
+        <JournalBackCover config={document.config} />
       </div>
     </>
   );

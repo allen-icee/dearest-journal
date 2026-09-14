@@ -1,14 +1,21 @@
 import React, { useRef, useEffect } from 'react';
 import { LINE_HEIGHT_CM } from '../utils/typography';
 import { JournalClosing } from './JournalClosing';
+import { type JournalConfig } from '../types/journalConfig';
 
 interface JournalLinesProps {
   content: string; // HTML string representing rich text
   onChange?: (html: string) => void;
   isEditable?: boolean;
+  config: JournalConfig;
 }
 
-export const JournalLines: React.FC<JournalLinesProps> = ({ content, onChange, isEditable = false }) => {
+const getFontClass = (fontFamily: string) => {
+  if (fontFamily.includes('Italic')) return 'ice-font-italic';
+  return 'ice-font';
+};
+
+export const JournalLines: React.FC<JournalLinesProps> = ({ content, onChange, isEditable = false, config }) => {
   const textContainerRef = useRef<HTMLDivElement>(null);
   const scrollWrapperRef = useRef<HTMLDivElement>(null);
   
@@ -90,7 +97,7 @@ export const JournalLines: React.FC<JournalLinesProps> = ({ content, onChange, i
       {/* Text Content Overlay */}
       <div 
         ref={scrollWrapperRef}
-        className="ice-font"
+        className={getFontClass(config.body.fontFamily)}
         style={{
           position: 'relative',
           top: '0.15cm',
@@ -102,12 +109,13 @@ export const JournalLines: React.FC<JournalLinesProps> = ({ content, onChange, i
           margin: 0,
           boxSizing: 'border-box',
           lineHeight: `${LINE_HEIGHT_CM}cm`,
-          fontSize: `${LINE_HEIGHT_CM * 0.7}cm`,
+          fontSize: config.body.fontSize,
+          color: config.body.color,
           overflow: 'hidden', // physical container bounds restrict the layout
         }}
       >
-        <div style={{ textAlign: 'left' }} contentEditable={false}>
-          <span className="ice-font-italic">To My Dearest Beloved Miss</span>,
+        <div style={{ textAlign: 'left', color: config.greeting.color, fontSize: config.greeting.fontSize }} contentEditable={false}>
+          <span className={getFontClass(config.greeting.fontFamily)}>{config.title.text}</span><span className="ice-font">,</span>
         </div>
         
         {/* The rich-text editable writing surface */}
@@ -126,9 +134,10 @@ export const JournalLines: React.FC<JournalLinesProps> = ({ content, onChange, i
         />
 
         <div contentEditable={false} style={{ userSelect: 'none' }}>
-          {hasContent && <JournalClosing />}
+          {hasContent && <JournalClosing config={config} />}
         </div>
       </div>
     </div>
   );
 };
+
