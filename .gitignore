@@ -33,3 +33,6 @@ public/fonts/*
 
 # Antigravity local/private files
 .agent/*
+# Private Assets
+public/signature/*
+public/fonts/*

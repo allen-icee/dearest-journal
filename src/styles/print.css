@@ -1,0 +1,38 @@
+/* Print overrides */
+@media print {
+  @page {
+    size: 15cm 21.6cm;
+    margin: 0;
+  }
+
+  body {
+    background-color: white;
+    /* Reset screen UI layout for printing */
+    display: block;
+    min-height: auto;
+  }
+
+  /* Hide any application UI that shouldn't be printed */
+  .no-print {
+    display: none !important;
+  }
+
+  .screen-preview-container {
+    padding: 0 !important;
+    gap: 0 !important;
+    display: block !important;
+  }
+
+  /* Ensure the journal pages break correctly and have no shadow */
+  .journal-physical-page {
+    box-shadow: none !important;
+    break-after: page;
+    page-break-after: always;
+    width: 15cm !important;
+    height: 21.6cm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+  }
+}

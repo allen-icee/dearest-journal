@@ -1,0 +1,54 @@
+/* General Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f0f0f0;
+  /* Gray background for screen UI */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  /* Better for scrolling tall content */
+  min-height: 100vh;
+  font-family: sans-serif;
+  /* For standard UI elements, not the journal */
+}
+
+/* Screen Preview Specific */
+.screen-preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  width: 100%;
+}
+
+.journal-physical-page {
+  background-color: white;
+  width: 15cm;
+  height: 21.6cm;
+  position: relative;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  /* Shadow to distinguish from UI */
+  overflow: hidden;
+  /* Prevent visual overflow in preview */
+  box-sizing: border-box;
+  /* Strict sizing */
+}
+
+
+/* Signature Manual Positioning */
+.signature-image {
+  position: absolute;
+  z-index: 0;
+  opacity: 0.65;
+
+  /* Easy manual controls for the user */
+  right: -0.2cm;
+  top: -1.7cm;
+  width: 3cm;
+}
