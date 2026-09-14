@@ -23,4 +23,13 @@ dist-ssr
 *.sln
 *.sw?
 
-.agent
+# Private personal assets
+public/signature/*
+public/fonts/*
+
+# Keep placeholder files if needed
+!public/signature/.gitkeep
+!public/fonts/.gitkeep
+
+# Antigravity local/private files
+.agent/*
