@@ -16,6 +16,10 @@
   .no-print {
     display: none !important;
   }
+  
+  .print-only {
+    display: block !important;
+  }
 
   .screen-preview-container {
     padding: 0 !important;

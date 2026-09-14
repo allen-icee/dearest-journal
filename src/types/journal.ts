@@ -16,16 +16,14 @@ export const JOURNAL_METRICS: JournalPageMetrics = {
   totalLines: 32,
 };
 
-export const MAX_INTERIOR_PAGES = 32;
-
 export interface JournalPageData {
-  pageNumber: number;
-  date?: string; // MM-DD-YYYY if dated, otherwise undefined for filler
-  content: string[]; 
+  pageNumber: number; // The physical slot number of the calendar day
+  date: string | null; // e.g., "09-14-2026"
+  content: string; // HTML rich text content
 }
 
 export interface JournalDocument {
-  month: number; // 1-12
+  month: number;
   year: number;
   pages: JournalPageData[]; // Exactly 32 items
 }

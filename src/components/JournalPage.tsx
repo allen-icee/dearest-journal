@@ -1,38 +1,37 @@
 import React from 'react';
-import { JOURNAL_METRICS } from '../types/journal';
 import { JournalHeader } from './JournalHeader';
 import { JournalLines } from './JournalLines';
+import { JOURNAL_METRICS } from '../types/journal';
 
 interface JournalPageProps {
-  date?: string;
-  content: string[];
+  date: string | null;
+  content: string; // HTML string
+  onChange?: (html: string) => void;
+  isEditable?: boolean;
 }
 
-export const JournalPage: React.FC<JournalPageProps> = ({ date, content }) => {
+export const JournalPage: React.FC<JournalPageProps> = ({ date, content, onChange, isEditable = false }) => {
   return (
     <div className="responsive-scale-wrapper">
       <div className="journal-physical-page" id="journal-page">
+        {/* Header */}
         <div id="journal-header">
-          {/* Always render header wrapper to maintain 1.4cm height, conditionally render date text */}
-          <JournalHeader date={date || ""} />
+          {date && <JournalHeader date={date} />}
         </div>
         
         {/* Top Spacing */}
         <div id="journal-top-spacing" style={{ height: JOURNAL_METRICS.bodyTopSpacing, boxSizing: 'border-box' }} />
 
-        {/* Body Area */}
-        <div id="journal-body-area" style={{
-          height: `calc(${JOURNAL_METRICS.height} - ${JOURNAL_METRICS.headerHeight} - ${JOURNAL_METRICS.bodyTopSpacing} - ${JOURNAL_METRICS.footerHeight})`,
-          boxSizing: 'border-box',
+        {/* Writing Area */}
+        <div id="journal-body" style={{ 
+          height: `calc(${JOURNAL_METRICS.height} - ${JOURNAL_METRICS.headerHeight} - ${JOURNAL_METRICS.bodyTopSpacing} - ${JOURNAL_METRICS.footerHeight})`, 
+          boxSizing: 'border-box' 
         }}>
-          <JournalLines content={content} />
+          <JournalLines content={content} onChange={onChange} isEditable={isEditable} />
         </div>
-
-        {/* Footer Area */}
-        <div id="journal-footer" style={{
-          height: JOURNAL_METRICS.footerHeight,
-          boxSizing: 'border-box',
-        }} />
+        
+        {/* Footer */}
+        <div id="journal-footer" style={{ height: JOURNAL_METRICS.footerHeight, boxSizing: 'border-box' }} />
       </div>
     </div>
   );
