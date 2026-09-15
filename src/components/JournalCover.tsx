@@ -1,5 +1,5 @@
 import React from 'react';
-import { Diamond, Sparkles, Flower2 } from 'lucide-react';
+import { Diamond, Flower2 } from 'lucide-react';
 import { MONTH_NAMES } from '../utils/calendar';
 import { type JournalConfig } from '../types/journalConfig';
 import { DEFAULT_JOURNAL_CONFIG } from '../config/journalDefaults';
