@@ -10,11 +10,6 @@ interface JournalLinesProps {
   config: JournalConfig;
 }
 
-const getFontClass = (fontFamily: string) => {
-  if (fontFamily.includes('Italic')) return 'ice-font-italic';
-  return 'ice-font';
-};
-
 export const JournalLines: React.FC<JournalLinesProps> = ({ content, onChange, isEditable = false, config }) => {
   const textContainerRef = useRef<HTMLDivElement>(null);
   const scrollWrapperRef = useRef<HTMLDivElement>(null);

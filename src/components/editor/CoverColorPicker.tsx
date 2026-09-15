@@ -3,16 +3,16 @@ import { Palette, Pipette } from 'lucide-react';
 import { Tooltip } from './Tooltip';
 
 export const COVER_COLOR_PRESETS = [
-  '#C9B8E8', // Pastel Violet
-  '#D8C9EF', // Lavender
-  '#E5D7F2', // Soft Lilac
-  '#BDAACF', // Dusty Violet
-  '#D4BFCF', // Mauve
-  '#EBCFD6', // Blush
-  '#C8DCEF', // Powder Blue
-  '#C9DCCF', // Sage
-  '#EFE1B8', // Buttercream
-  '#D8D6D3', // Warm Gray
+  '#C9B8E8',
+  '#D8C9EF',
+  '#E5D7F2',
+  '#BDAACF',
+  '#D4BFCF',
+  '#EBCFD6',
+  '#C8DCEF',
+  '#C9DCCF',
+  '#EFE1B8',
+  '#D8D6D3',
 ];
 
 export const DEFAULT_COVER_COLOR = '#C9B8E8';
@@ -65,14 +65,14 @@ export const CoverColorPicker: React.FC<CoverColorPickerProps> = ({ color, onCha
           <div className="toolbar-btn-icon">
             <Palette size={18} />
           </div>
-          <div 
-            style={{ 
-              width: '12px', 
-              height: '12px', 
-              borderRadius: '50%', 
+          <div
+            style={{
+              width: '12px',
+              height: '12px',
+              borderRadius: '50%',
               backgroundColor: color || DEFAULT_COVER_COLOR,
               border: '1px solid rgba(0,0,0,0.1)'
-            }} 
+            }}
           />
         </button>
       </Tooltip>
@@ -104,19 +104,19 @@ export const CoverColorPicker: React.FC<CoverColorPickerProps> = ({ color, onCha
             <div className="custom-color-row">
               <div className="hex-input-wrapper">
                 <span className="hex-hash">#</span>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="hex-input"
                   value={hexInput.replace('#', '')}
                   onChange={handleHexChange}
                   maxLength={6}
                 />
               </div>
-              
+
               <div className="native-color-picker-wrapper">
                 <Pipette size={16} className="native-color-picker-icon" />
-                <input 
-                  type="color" 
+                <input
+                  type="color"
                   className="native-color-picker"
                   value={color || DEFAULT_COVER_COLOR}
                   onChange={(e) => onChange(e.target.value)}

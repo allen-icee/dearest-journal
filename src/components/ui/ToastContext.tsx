@@ -29,7 +29,12 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <ToastContext.Provider value={{ addToast, removeToast }}>
       {children}
       {/* Container is rendered globally, unaffected by editor print styles */}
-      <div className="toast-container no-print" aria-live="polite" aria-atomic="true">
+      <div 
+        className="toast-container no-print" 
+        aria-live="polite" 
+        aria-atomic="true"
+        style={{ position: 'fixed', top: '80px', right: '20px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '10px', pointerEvents: 'none' }}
+      >
         {toasts.map(toast => (
           <Toast key={toast.id} toast={toast} onRemove={removeToast} />
         ))}

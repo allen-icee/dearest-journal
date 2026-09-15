@@ -14,9 +14,12 @@ interface DropdownProps {
   onSelect: (id: string) => void;
   title?: string;
   width?: string;
+  triggerClassName?: string;
+  triggerStyle?: React.CSSProperties;
+  footer?: React.ReactNode;
 }
 
-export const Dropdown: React.FC<DropdownProps> = ({ label, items, selectedId, onSelect, title, width = '200px' }) => {
+export const Dropdown: React.FC<DropdownProps> = ({ label, items, selectedId, onSelect, title, width = '200px', triggerClassName = '', triggerStyle, footer }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -48,7 +51,8 @@ export const Dropdown: React.FC<DropdownProps> = ({ label, items, selectedId, on
   return (
     <div className="custom-dropdown" ref={containerRef} title={title}>
       <button 
-        className={`dropdown-trigger ${isOpen ? 'active' : ''}`} 
+        className={`dropdown-trigger ${isOpen ? 'active' : ''} ${triggerClassName}`} 
+        style={triggerStyle}
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
       >
@@ -57,7 +61,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ label, items, selectedId, on
       </button>
 
       {isOpen && (
-        <div className="dropdown-menu" style={{ width }} role="menu">
+        <div className="dropdown-menu" style={{ width, minWidth: '100%' }} role="menu">
           {items.map((item, index) => {
             if (item.isSeparator) {
               return <div key={`sep-${index}`} className="dropdown-separator" role="separator" />;
@@ -74,6 +78,14 @@ export const Dropdown: React.FC<DropdownProps> = ({ label, items, selectedId, on
               </button>
             );
           })}
+          {footer && (
+            <>
+              <div className="dropdown-separator" role="separator" />
+              <div className="dropdown-footer" style={{ padding: '0.4rem 1rem' }}>
+                {footer}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

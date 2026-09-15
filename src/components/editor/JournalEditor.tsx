@@ -2,17 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { type JournalDocument } from '../../types/journal';
 import { type SaveStatus } from '../../storage/storageTypes';
 import { type JournalConfig } from '../../types/journalConfig';
-import { DEFAULT_JOURNAL_CONFIG } from '../../config/journalDefaults';
 import { Toolbar } from './Toolbar';
 import { StatusBar } from './StatusBar';
 import { JournalPage } from '../JournalPage';
 import { JournalCover } from '../JournalCover';
 import { JournalBackCover } from '../JournalBackCover';
-import { YearSelector } from './YearSelector';
-import { MonthSelector } from './MonthSelector';
-import { PageSelector } from './PageSelector';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Tooltip } from './Tooltip';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 
 interface JournalEditorProps {
   document: JournalDocument;
@@ -21,7 +16,8 @@ interface JournalEditorProps {
   onContentChange: (pageNumber: number, content: string) => void;
   onImport: () => void;
   onExport: () => void;
-  onDocumentChange: (updatedDoc: JournalDocument) => void;
+  config: JournalConfig;
+  onConfigChange: (updatedConfig: JournalConfig) => void;
 }
 
 export const JournalEditor: React.FC<JournalEditorProps> = ({ 
@@ -31,51 +27,13 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
   onContentChange,
   onImport,
   onExport,
-  onDocumentChange
+  config,
+  onConfigChange
 }) => {
-  const [activeSlot, setActiveSlot] = useState<string>('cover');
   const [zoom, setZoom] = useState<number>(1);
+  const [activePageId, setActivePageId] = useState<string>('Front Cover');
 
-  // Safely fallback to defaults if config is missing or using the old schema (e.g. older journal)
-  const getSafeConfig = (): JournalConfig => {
-    let base = { ...DEFAULT_JOURNAL_CONFIG };
-    if (document.config) {
-      const oldConfig = document.config as any;
-      if (oldConfig.writing && !oldConfig.body) {
-        // Upgrade from old Phase 5 schema to the separated role schema
-        base = {
-          ...base,
-          ...oldConfig,
-          body: {
-            fontFamily: oldConfig.writing.fontFamily || base.body.fontFamily,
-            fontSize: oldConfig.writing.fontSize || base.body.fontSize,
-            color: oldConfig.writing.fontColor || base.body.color,
-          },
-          // Greeting, title, closing fallback to safe pristine defaults
-          greeting: { ...base.greeting },
-          title: { ...base.title, text: oldConfig.journal?.title || base.title.text, showHeart: oldConfig.journal?.titleHeartEnabled ?? base.title.showHeart },
-          closing: { ...base.closing, ...oldConfig.closing },
-        };
-        // Clean up the obsolete property
-        delete (base as any).writing;
-        delete (base as any).journal;
-      } else {
-        base = { ...base, ...document.config };
-      }
-    }
-    
-    return {
-      ...base,
-      frontCover: {
-        ...base.frontCover
-      },
-      backCover: {
-        ...base.backCover
-      }
-    };
-  };
 
-  const config: JournalConfig = getSafeConfig();
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -101,120 +59,140 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
-  const handleConfigSave = (newConfig: JournalConfig) => {
-    onDocumentChange({
-      ...document,
-      config: newConfig
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.find(e => e.isIntersecting);
+      if (visible) {
+        const id = visible.target.getAttribute('data-page-id');
+        if (id) setActivePageId(id);
+      }
+    }, {
+      root: null,
+      rootMargin: '-20% 0px -20% 0px',
+      threshold: 0
     });
-  };
 
-  const navigatePage = (direction: 'prev' | 'next') => {
-    const allSlots = ['cover', ...document.pages.map(p => String(p.pageNumber)), 'back-cover'];
-    const idx = allSlots.indexOf(activeSlot);
-    if (idx === -1) return;
+    const elements = window.document.querySelectorAll('.page-wrapper');
+    elements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [document.pages, zoom]);
+
+  const handleScroll = (direction: 'up' | 'down', currentId: string) => {
+    const wrappers = Array.from(window.document.querySelectorAll('.page-wrapper'));
+    const currentIndex = wrappers.findIndex(w => w.getAttribute('data-page-id') === currentId);
+    if (currentIndex === -1) return;
     
-    if (direction === 'prev' && idx > 0) {
-      setActiveSlot(allSlots[idx - 1]);
-    } else if (direction === 'next' && idx < allSlots.length - 1) {
-      setActiveSlot(allSlots[idx + 1]);
-    }
+    let targetIndex = currentIndex;
+    if (direction === 'up' && currentIndex > 0) targetIndex = currentIndex - 1;
+    if (direction === 'down' && currentIndex < wrappers.length - 1) targetIndex = currentIndex + 1;
+    
+    wrappers[targetIndex].scrollIntoView({ behavior: 'smooth' });
   };
 
   const getWordCount = () => {
-    if (activeSlot === 'cover' || activeSlot === 'back-cover') return 0;
-    const pageNum = Number(activeSlot);
-    const page = document.pages.find(p => p.pageNumber === pageNum);
-    if (!page || !page.content) return 0;
-    
-    const temp = window.document.createElement('div');
-    temp.innerHTML = page.content;
-    const text = temp.textContent || temp.innerText || '';
-    const words = text.trim().split(/\s+/);
-    return text.trim() === '' ? 0 : words.length;
+    let total = 0;
+    document.pages.forEach(page => {
+      if (!page.content) return;
+      const temp = window.document.createElement('div');
+      temp.innerHTML = page.content;
+      const text = temp.textContent || temp.innerText || '';
+      const words = text.trim().split(/\s+/);
+      if (text.trim() !== '') {
+        total += words.length;
+      }
+    });
+    return total;
   };
-
-  const isCover = activeSlot === 'cover' || activeSlot === 'back-cover';
 
   return (
     <div className="app-container">
+      {/**
+        * Dynamically injects user-uploaded custom fonts at runtime.
+        * Converts the stored Base64 payload into a native @font-face rule,
+        * allowing the journal to render custom typography entirely client-side 
+        * without external font requests or local installation.
+        */}
+      {config.customFonts?.map(font => (
+        <style key={font.name}>
+          {`
+            @font-face {
+              font-family: '${font.name}';
+              src: url(${font.base64}) format('truetype');
+            }
+          `}
+        </style>
+      ))}
+
       {/* Top Toolbar */}
       <Toolbar 
         document={document}
         config={config}
         saveStatus={saveStatus}
+        month={document.month}
+        year={document.year}
+        onMonthChange={onMonthChange}
         onImport={onImport}
         onExport={onExport}
-        onConfigChange={handleConfigSave}
+        onConfigChange={onConfigChange}
       />
 
       {/* Document Workspace */}
       <div className="document-workspace">
-        
-        {/* Navigation Layer */}
-        <div className="workspace-navigation no-print">
-          <Tooltip content="Previous page" position="bottom">
-            <button className="nav-arrow-btn" onClick={() => navigatePage('prev')} aria-label="Previous page">
-              <ChevronLeft size={20} />
-            </button>
-          </Tooltip>
-
-          <YearSelector 
-            year={document.year} 
-            onChange={(y) => {
-              onMonthChange(document.month, y);
-              setActiveSlot('cover');
-            }}
-          />
-          <MonthSelector 
-            month={document.month} 
-            onChange={(m) => {
-              onMonthChange(m, document.year);
-              setActiveSlot('cover');
-            }} 
-          />
-          <PageSelector 
-            pages={document.pages} 
-            activeSlot={activeSlot} 
-            onSelectSlot={setActiveSlot} 
-          />
-
-          <Tooltip content="Next page" position="bottom">
-            <button className="nav-arrow-btn" onClick={() => navigatePage('next')} aria-label="Next page">
-              <ChevronRight size={20} />
-            </button>
-          </Tooltip>
-        </div>
-
         {/* Scaled Render Layer */}
-        <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top center', transition: 'transform 0.15s ease' }}>
-          {activeSlot === 'cover' && <JournalCover month={document.month} year={document.year} config={config} />}
+        <div style={{ zoom: zoom, transition: 'zoom 0.15s ease', display: 'flex', flexDirection: 'column', gap: '40px', alignItems: 'center' }}>
           
-          {activeSlot === 'back-cover' && <JournalBackCover config={config} />}
+          <div className="page-wrapper" data-page-id="Front Cover">
+            <div className="page-header-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Front Cover</span>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <button className="canva-nav-btn" onClick={() => handleScroll('up', 'Front Cover')} aria-label="Previous Page"><ChevronUp size={16} /></button>
+                <button className="canva-nav-btn" onClick={() => handleScroll('down', 'Front Cover')} aria-label="Next Page"><ChevronDown size={16} /></button>
+              </div>
+            </div>
+            <JournalCover month={document.month} year={document.year} config={config} />
+          </div>
 
-          {!isCover && (() => {
-            const pageNum = Number(activeSlot);
-            const activePage = document.pages.find(p => p.pageNumber === pageNum);
-            if (!activePage) return null;
+          {document.pages.map((p) => {
+            const pageId = `Page ${p.pageNumber} of ${document.pages.length}`;
             return (
-              <JournalPage 
-                key={pageNum}
-                date={activePage.date} 
-                content={activePage.content} 
-                onChange={(html) => onContentChange(pageNum, html)}
-                isEditable={true}
-                config={config}
-              />
+              <div key={p.pageNumber} className="page-wrapper" data-page-id={pageId}>
+                <div className="page-header-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Day {p.pageNumber} - {p.date}</span>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <button className="canva-nav-btn" onClick={() => handleScroll('up', pageId)} aria-label="Previous Page"><ChevronUp size={16} /></button>
+                    <button className="canva-nav-btn" onClick={() => handleScroll('down', pageId)} aria-label="Next Page"><ChevronDown size={16} /></button>
+                  </div>
+                </div>
+                <JournalPage 
+                  date={p.date} 
+                  content={p.content} 
+                  onChange={(html) => onContentChange(p.pageNumber, html)}
+                  isEditable={true}
+                  config={config}
+                />
+              </div>
             );
-          })()}
+          })}
+
+          <div className="page-wrapper" data-page-id="Back Cover">
+            <div className="page-header-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Back Cover</span>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <button className="canva-nav-btn" onClick={() => handleScroll('up', 'Back Cover')} aria-label="Previous Page"><ChevronUp size={16} /></button>
+                <button className="canva-nav-btn" onClick={() => handleScroll('down', 'Back Cover')} aria-label="Next Page"><ChevronDown size={16} /></button>
+              </div>
+            </div>
+            <JournalBackCover config={config} />
+          </div>
+
         </div>
       </div>
 
       {/* Floating Status Bar with Zoom Controls */}
       <StatusBar 
-        isVisible={true} // Always visible to allow zooming
-        isCover={isCover}
-        currentPage={Number(activeSlot) || 1}
-        totalPages={document.pages.length}
+        isVisible={true}
+        activePageId={activePageId}
         wordCount={getWordCount()}
         zoom={zoom}
         onZoomChange={setZoom}

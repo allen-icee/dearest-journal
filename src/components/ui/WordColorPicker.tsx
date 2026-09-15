@@ -80,9 +80,9 @@ export const WordColorPicker: React.FC<WordColorPickerProps> = ({
             border: '1px solid #C8C6C4',
             boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
             borderRadius: '2px',
-            padding: '12px',
+            padding: '8px',
             zIndex: 1000,
-            width: '220px'
+            width: 'fit-content'
           }}
         >
           <div style={{ fontSize: '12px', color: '#605E5C', marginBottom: '8px', fontWeight: 600 }}>Theme Colors</div>
@@ -130,25 +130,28 @@ export const WordColorPicker: React.FC<WordColorPickerProps> = ({
             ))}
           </div>
 
-          <div style={{ height: '1px', background: '#e1e4e8', margin: '12px 0 8px 0' }} />
+          <div style={{ height: '1px', background: '#e1e4e8', margin: '8px 0 8px 0' }} />
           
           <label style={{ 
+            position: 'relative', 
+            overflow: 'hidden', 
             display: 'block', 
+            cursor: 'pointer',
             fontSize: '12px', 
             color: '#333', 
-            cursor: 'pointer', 
             padding: '4px',
             textAlign: 'center',
             background: '#f8f9fa',
             borderRadius: '4px',
-            border: '1px solid #e1e4e8'
+            border: '1px solid #e1e4e8',
+            marginBottom: 0
           }}>
-            🎨 More Colors...
+            <span>🎨 More Colors...</span>
             <input 
               type="color" 
-              style={{ display: 'none' }}
               value={color.startsWith('#') ? color : '#000000'}
               onChange={(e) => handleSelect(e.target.value)}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
             />
           </label>
         </div>

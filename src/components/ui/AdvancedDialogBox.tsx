@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Maximize, Minimize } from 'lucide-react';
+import { X, Maximize, Minimize, Info } from 'lucide-react';
 import { type JournalConfig, type CoverPosition } from '../../types/journalConfig';
 
 interface AdvancedDialogBoxProps {
@@ -68,6 +68,8 @@ export const AdvancedDialogBox: React.FC<AdvancedDialogBoxProps> = ({
             value={draftConfig.signature.width} 
             onChange={e => updateDraft(p => ({...p, signature: {...p.signature, width: e.target.value}}))}
             placeholder="e.g. 3cm"
+            pattern="^\d+(\.\d+)?(cm|px|%)$"
+            title="Must be a valid CSS dimension like '3cm', '150px', or '20%'"
           />
         </label>
         
@@ -80,6 +82,8 @@ export const AdvancedDialogBox: React.FC<AdvancedDialogBoxProps> = ({
               style={{ border: '1px solid #e1e4e8', borderRadius: '4px', padding: '4px 8px', background: '#fff' }}
               value={draftConfig.signature.offsetX} 
               onChange={e => updateDraft(p => ({...p, signature: {...p.signature, offsetX: e.target.value}}))}
+              pattern="^-?\d+(\.\d+)?(cm|px|%)$"
+              title="Must be a valid CSS dimension like '3cm', '-10px', or '5%'"
             />
           </label>
           <label style={{ fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
@@ -90,6 +94,8 @@ export const AdvancedDialogBox: React.FC<AdvancedDialogBoxProps> = ({
               style={{ border: '1px solid #e1e4e8', borderRadius: '4px', padding: '4px 8px', background: '#fff' }}
               value={draftConfig.signature.offsetY} 
               onChange={e => updateDraft(p => ({...p, signature: {...p.signature, offsetY: e.target.value}}))}
+              pattern="^-?\d+(\.\d+)?(cm|px|%)$"
+              title="Must be a valid CSS dimension like '3cm', '-10px', or '5%'"
             />
           </label>
         </div>
@@ -98,17 +104,23 @@ export const AdvancedDialogBox: React.FC<AdvancedDialogBoxProps> = ({
   );
 
   const renderCoverSettings = () => {
-    const gridPositions = [
-      null, 'top', null,
-      'left', 'center', 'right',
-      null, 'bottom', null
+    const gridPositions: { pos: CoverPosition; title: string }[] = [
+      { pos: 'top left', title: 'Top Left' },
+      { pos: 'top', title: 'Top Center' },
+      { pos: 'top right', title: 'Top Right' },
+      { pos: 'left', title: 'Center Left' },
+      { pos: 'center', title: 'Center' },
+      { pos: 'right', title: 'Center Right' },
+      { pos: 'bottom left', title: 'Bottom Left' },
+      { pos: 'bottom', title: 'Bottom Center' },
+      { pos: 'bottom right', title: 'Bottom Right' }
     ];
 
     return (
       <>
-        <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#333' }}>Front Cover Image</h4>
-        <div style={{ display: 'flex', gap: '16px', marginBottom: '8px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#333', textAlign: 'center' }}>Front Cover Image</h4>
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '4px', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
             <span style={{ fontSize: '13px' }}>Fit</span>
             <div className="alignment-group">
               <button 
@@ -121,34 +133,33 @@ export const AdvancedDialogBox: React.FC<AdvancedDialogBoxProps> = ({
               <button 
                 className={`alignment-btn ${draftConfig.frontCover.imageSize === 'contain' ? 'active' : ''}`} 
                 onClick={() => updateDraft(p => ({...p, frontCover: {...p.frontCover, imageSize: 'contain'}}))} 
-                title="Contain (Fit in View)"
+                title="Contain (Fit to Page)"
               >
                 <Minimize size={16} />
               </button>
             </div>
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
             <span style={{ fontSize: '13px' }}>Position</span>
             <div className="position-grid">
-              {gridPositions.map((pos, i) => (
+              {gridPositions.map((item, i) => (
                 <button
                   key={i}
-                  disabled={pos === null}
-                  className={`position-dot ${pos === draftConfig.frontCover.imagePosition ? 'active' : ''}`}
-                  onClick={() => pos && updateDraft(p => ({...p, frontCover: {...p.frontCover, imagePosition: pos as CoverPosition}}))}
-                  title={pos ? `Align ${pos}` : undefined}
+                  className={`position-dot ${item.pos === draftConfig.frontCover.imagePosition ? 'active' : ''}`}
+                  onClick={() => updateDraft(p => ({...p, frontCover: {...p.frontCover, imagePosition: item.pos}}))}
+                  title={item.title}
                 />
               ))}
             </div>
           </div>
         </div>
 
-        <hr style={{ border: 'none', borderTop: '1px solid #e1e4e8', margin: '8px 0 8px 0' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid #e1e4e8', margin: '4px 0 4px 0' }} />
 
-        <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#333' }}>Back Cover Image</h4>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#333', textAlign: 'center' }}>Back Cover Image</h4>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
             <span style={{ fontSize: '13px' }}>Fit</span>
             <div className="alignment-group">
               <button 
@@ -161,23 +172,22 @@ export const AdvancedDialogBox: React.FC<AdvancedDialogBoxProps> = ({
               <button 
                 className={`alignment-btn ${draftConfig.backCover.imageSize === 'contain' ? 'active' : ''}`} 
                 onClick={() => updateDraft(p => ({...p, backCover: {...p.backCover, imageSize: 'contain'}}))} 
-                title="Contain (Fit in View)"
+                title="Contain (Fit to Page)"
               >
                 <Minimize size={16} />
               </button>
             </div>
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
             <span style={{ fontSize: '13px' }}>Position</span>
             <div className="position-grid">
-              {gridPositions.map((pos, i) => (
+              {gridPositions.map((item, i) => (
                 <button
                   key={`back-${i}`}
-                  disabled={pos === null}
-                  className={`position-dot ${pos === draftConfig.backCover.imagePosition ? 'active' : ''}`}
-                  onClick={() => pos && updateDraft(p => ({...p, backCover: {...p.backCover, imagePosition: pos as CoverPosition}}))}
-                  title={pos ? `Align ${pos}` : undefined}
+                  className={`position-dot ${item.pos === draftConfig.backCover.imagePosition ? 'active' : ''}`}
+                  onClick={() => updateDraft(p => ({...p, backCover: {...p.backCover, imagePosition: item.pos}}))}
+                  title={item.title}
                 />
               ))}
             </div>
@@ -225,12 +235,18 @@ export const AdvancedDialogBox: React.FC<AdvancedDialogBoxProps> = ({
 
   const renderFontSettings = () => (
     <>
-      <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#333' }}>Font Presets</h4>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+      <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#333', textAlign: 'center' }}>Font Presets</h4>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
         <button className="dialog-btn" onClick={() => applyPreset('default')}>Dearest Default</button>
         <button className="dialog-btn" onClick={() => applyPreset('classic')}>Classic (Black)</button>
         <button className="dialog-btn" onClick={() => applyPreset('violet')}>Soft Violet</button>
         <button className="dialog-btn" onClick={() => applyPreset('smallnote')}>Small Note</button>
+      </div>
+      <div style={{ marginTop: '12px', padding: '8px', backgroundColor: '#f0f4f8', borderRadius: '4px', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+        <Info size={16} color="#005fb8" style={{ flexShrink: 0, marginTop: '2px' }} />
+        <span style={{ fontSize: '11px', color: '#333', lineHeight: '1.4' }}>
+          <strong>Pro Tip:</strong> Want to use your own real handwriting? You can create your own font for free at <a href="https://www.calligraphr.com/" target="_blank" rel="noopener noreferrer" style={{ color: '#005fb8', textDecoration: 'underline' }}>Calligraphr.com</a> and install it on your device!
+        </span>
       </div>
     </>
   );

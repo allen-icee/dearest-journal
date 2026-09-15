@@ -1,6 +1,6 @@
 export type Alignment = 'left' | 'center' | 'right';
 export type CoverFit = 'cover' | 'contain';
-export type CoverPosition = 'center' | 'top' | 'bottom' | 'left' | 'right';
+export type CoverPosition = 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top left' | 'top right' | 'bottom left' | 'bottom right';
 export type CoverType = 'color' | 'image';
 
 export interface JournalConfig {
@@ -60,4 +60,9 @@ export interface JournalConfig {
     imagePosition: CoverPosition;
     imageSize: CoverFit;
   };
+  customFonts?: {
+    name: string;
+    base64: string;
+  }[];
+  showCoverText?: boolean;
 }

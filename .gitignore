@@ -7,10 +7,12 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Node & Vite
 node_modules
 dist
 dist-ssr
 *.local
+.env
 
 # Editor directories and files
 .vscode/*
@@ -24,15 +26,18 @@ dist-ssr
 *.sw?
 
 # Private personal assets
+public/signatures/*
 public/signature/*
-public/fonts/*
+*.sig
+*.signature
 
 # Keep placeholder files if needed
 !public/signature/.gitkeep
-!public/fonts/.gitkeep
+!public/signatures/.gitkeep
+
+# Allow fonts explicitly
+!public/fonts/
+!public/fonts/*
 
 # Antigravity local/private files
 .agent/*
-# Private Assets
-public/signature/*
-public/fonts/*

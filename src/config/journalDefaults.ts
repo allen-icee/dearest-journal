@@ -56,4 +56,5 @@ export const DEFAULT_JOURNAL_CONFIG: JournalConfig = {
     imagePosition: "center",
     imageSize: "cover",
   },
+  customFonts: [],
 };

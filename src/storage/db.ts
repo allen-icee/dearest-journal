@@ -4,6 +4,13 @@ const STORE_NAME = 'journals';
 
 let dbInstance: IDBDatabase | null = null;
 
+/**
+ * Initializes and opens a connection to the IndexedDB database.
+ * Handles database versioning and object store creation.
+ * 
+ * @returns {Promise<IDBDatabase>} A promise resolving to the database instance.
+ */
+
 export const openDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
     if (dbInstance) {

@@ -1,75 +1,50 @@
-# React + TypeScript + Vite
+# DearestJournal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A local-first, privacy-focused digital journal replicating the physical experience of a premium stationery notebook directly in the browser. Designed with strict 15cm x 21.6cm physical print dimensions and a seamless, continuous scrolling canvas.
 
-Currently, two official plugins are available:
+✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Local-First Architecture:** Zero backend. Complete privacy using IndexedDB for local persistence.
+- **Dynamic Font Engine:** Upload custom `.ttf`/`.otf` fonts converted securely via Base64.
+- **Premium UI:** Microsoft Word-style Ribbon navigation and a Canva-style continuous vertical workspace.
+- **Stationery Aesthetic:** Elegant, foil-stamped cover designs with pastel themes and custom decorative typography.
 
-## React Compiler
+Languages & Tools (⌐■_■)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![IndexedDB](https://img.shields.io/badge/IndexedDB-4B8BBE?style=for-the-badge&logo=sqlite&logoColor=white)
 
-## Expanding the ESLint configuration
+🚀 Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js & npm
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+git clone <repository-url>
+cd dearest-journal
+# Install frontend dependencies
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Run
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+# Start the Vite development server
+npm run dev
 ```
+
+📄 License
+
+Copyright (c) 2026 Allen Icee Dequiros
+
+This project is shared for portfolio, educational, and learning purposes.
+You are welcome to study the codebase and use it as inspiration for your own projects.
+Copying substantial portions of this project, redistributing it, submitting it as your own work, or creating direct clones is not permitted without explicit permission.
+If this project inspires your work, please build your own implementation rather than copying the source code.
+All rights reserved.

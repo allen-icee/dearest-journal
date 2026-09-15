@@ -69,6 +69,7 @@ body {
   /* Force browsers to print the background color */
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
+  position: relative;
 }
 
 /* Signature Manual Positioning */
@@ -105,39 +106,31 @@ body {
   justify-content: flex-start;
 }
 
-.workspace-navigation {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
+.page-header-label {
+  width: 15cm;
+  text-align: left;
+  margin-bottom: 8px;
+  color: #d1d5db;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: sans-serif;
 }
 
-.workspace-navigation .dropdown-trigger {
-  color: rgba(255, 255, 255, 0.9);
-}
-.workspace-navigation .dropdown-trigger:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-.workspace-navigation .dropdown-trigger.active {
-  background: rgba(255, 255, 255, 0.15);
-}
-.workspace-navigation .dropdown-caret {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.nav-arrow-btn {
+.canva-nav-btn {
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 0.2rem;
+  padding: 4px;
+  color: #9ca3af;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.15s ease;
 }
-.nav-arrow-btn:hover {
+.canva-nav-btn:hover {
   background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 /* Word-Style Ribbon Toolbar */
@@ -166,8 +159,9 @@ body {
   color: #ffffff;
 }
 
-.toolbar-title-bar .toolbar-btn:hover {
+.toolbar-title-bar .toolbar-btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .toolbar-title-bar .toolbar-divider {
@@ -203,7 +197,10 @@ body {
   border: 1px solid #C8C6C4;
   box-shadow: 0 4px 16px rgba(0,0,0,0.15);
   border-radius: 4px;
-  width: 400px;
+  min-width: 200px;
+  width: fit-content;
+  height: auto;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
 }
@@ -241,11 +238,11 @@ body {
 }
 
 .advanced-dialog-content {
-  padding: 16px;
+  padding: 12px;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-height: 400px;
+  gap: 8px;
   overflow-y: auto;
 }
 
@@ -253,8 +250,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 12px 16px;
-  border-top: 1px solid #e1e4e8;
+  margin-top: 0;
+  padding: 8px 12px;
+  border-top: 1px solid #eee;
   gap: 8px;
 }
 
@@ -329,6 +327,7 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
   padding: 0.5rem 1rem;
   min-height: 80px;
   background: #FFFFFF;
@@ -731,7 +730,7 @@ body {
 .dropdown-item {
   background: transparent;
   border: none;
-  padding: 0.4rem 1rem;
+  padding: 0.25rem 0.5rem;
   text-align: left;
   cursor: pointer;
   font-size: 0.9rem;

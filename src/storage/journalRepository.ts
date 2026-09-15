@@ -1,6 +1,9 @@
 import { get, put, getAll, remove } from './db';
 import { type StoredJournal, CURRENT_SCHEMA_VERSION } from './storageTypes';
 import { type JournalDocument } from '../types/journal';
+import { type JournalConfig } from '../types/journalConfig';
+
+const GLOBAL_CONFIG_ID = 'global_journal_config';
 
 /**
  * Generates the stable ID for a journal document based on its month and year.
@@ -64,6 +67,31 @@ export const deleteJournal = async (month: number, year: number): Promise<void> 
     await remove(id);
   } catch (error) {
     console.error(`Failed to delete journal ${id}`, error);
+    throw error;
+  }
+};
+
+/**
+ * Retrieves the global journal configuration.
+ */
+export const getGlobalConfig = async (): Promise<JournalConfig | null> => {
+  try {
+    const configWrapper = await get<{ id: string; config: JournalConfig }>(GLOBAL_CONFIG_ID);
+    return configWrapper ? configWrapper.config : null;
+  } catch (error) {
+    console.error("Failed to get global config", error);
+    return null;
+  }
+};
+
+/**
+ * Saves the global journal configuration.
+ */
+export const saveGlobalConfig = async (config: JournalConfig): Promise<void> => {
+  try {
+    await put({ id: GLOBAL_CONFIG_ID, config });
+  } catch (error) {
+    console.error("Failed to save global config", error);
     throw error;
   }
 };

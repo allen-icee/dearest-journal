@@ -5,15 +5,17 @@ import { JournalPage } from './components/JournalPage';
 import { JournalEditor } from './components/editor/JournalEditor';
 import { generateMonthPages } from './utils/calendar';
 import { type JournalDocument } from './types/journal';
-import { getJournal, saveJournal, generateJournalId } from './storage/journalRepository';
+import { getJournal, saveJournal, generateJournalId, getGlobalConfig, saveGlobalConfig } from './storage/journalRepository';
 import { type SaveStatus } from './storage/storageTypes';
 import { exportJournal, importJournal } from './utils/backup';
 import { useToast } from './hooks/useToast';
 import { ConfirmDialog } from './components/ui/ConfirmDialog';
 import { DEFAULT_JOURNAL_CONFIG } from './config/journalDefaults';
+import { type JournalConfig } from './types/journalConfig';
 
 function App() {
   const [document, setDocument] = useState<JournalDocument | null>(null);
+  const [globalConfig, setGlobalConfig] = useState<JournalConfig>(DEFAULT_JOURNAL_CONFIG);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
   const debounceRef = useRef<number | null>(null);
   const { addToast } = useToast();
@@ -25,6 +27,8 @@ function App() {
   // Initialize
   useEffect(() => {
     const initialize = async () => {
+      let gConfig = await getGlobalConfig();
+      
       const lastId = localStorage.getItem('lastActiveJournalId');
       let m = new Date().getMonth() + 1;
       let y = new Date().getFullYear();
@@ -37,6 +41,18 @@ function App() {
         }
       }
 
+      // Legacy fallback: If no global config exists, try to extract from the last active document
+      if (!gConfig) {
+        const lastStored = await getJournal(m, y);
+        if (lastStored && lastStored.document.config) {
+          gConfig = lastStored.document.config;
+        } else {
+          gConfig = DEFAULT_JOURNAL_CONFIG;
+        }
+        await saveGlobalConfig(gConfig);
+      }
+      
+      setGlobalConfig(gConfig);
       await loadDocument(m, y, false);
     };
 
@@ -52,8 +68,7 @@ function App() {
         const newDoc: JournalDocument = {
           month,
           year,
-          pages: generateMonthPages(month, year, ""),
-          config: JSON.parse(JSON.stringify(DEFAULT_JOURNAL_CONFIG))
+          pages: generateMonthPages(month, year, "")
         };
         setDocument(newDoc);
         if (notifyCreation) {
@@ -91,6 +106,15 @@ function App() {
       };
     });
     setSaveStatus('unsaved');
+  };
+
+  const handleConfigChange = async (newConfig: JournalConfig) => {
+    setGlobalConfig(newConfig);
+    try {
+      await saveGlobalConfig(newConfig);
+    } catch (e) {
+      addToast('Unable to save settings.', 'error');
+    }
   };
 
   // Debounced Autosave Effect
@@ -198,17 +222,14 @@ function App() {
           onContentChange={handleContentChange}
           onImport={handleImportClick}
           onExport={handleExport}
-          onDocumentChange={(updatedDoc) => {
-            setDocument(updatedDoc);
-            setSaveStatus('unsaved');
-          }}
+          config={globalConfig}
+          onConfigChange={handleConfigChange}
         />
       </div>
 
-      {/* The Actual Printed Notebook Document (Hidden on screen) */}
       <div className="print-only">
         {/* 1. Front Cover */}
-        <JournalCover month={document.month} year={document.year} config={document.config} />
+        <JournalCover month={document.month} year={document.year} config={globalConfig} />
 
         {/* 2. Interior Pages (Exactly 32 slots) */}
         {document.pages.map((pageData) => (
@@ -216,12 +237,12 @@ function App() {
             key={`print-page-${pageData.pageNumber}`}
             date={pageData.date} 
             content={pageData.content} 
-            config={document.config || DEFAULT_JOURNAL_CONFIG}
+            config={globalConfig}
           />
         ))}
 
         {/* 3. Back Cover */}
-        <JournalBackCover config={document.config} />
+        <JournalBackCover config={globalConfig} />
       </div>
     </>
   );

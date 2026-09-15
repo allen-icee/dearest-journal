@@ -1,4 +1,5 @@
 import React from 'react';
+import { Flower2 } from 'lucide-react';
 import { type JournalConfig } from '../types/journalConfig';
 
 interface JournalBackCoverProps {
@@ -25,24 +26,49 @@ export const JournalBackCover: React.FC<JournalBackCoverProps> = ({ config, colo
     <div className="responsive-scale-wrapper">
       <div className="journal-physical-page journal-cover-page" id="journal-back-cover" style={{
         padding: '1.2cm',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         ...getBackgroundStyle()
       }}>
-        <div style={{
-          height: '100%',
-          width: '100%',
-          border: '1px solid rgba(255, 255, 255, 0.4)',
-          borderRadius: '4px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          boxSizing: 'border-box'
-        }}>
-          {/* Subtle minimalist ornament */}
-          <div style={{ fontSize: '0.5cm', opacity: 0.6 }}>
-            ❦
-          </div>
-        </div>
+        {config?.showCoverText !== false && (
+          <>
+            {/* Foil Inset Double Border */}
+            <div style={{
+              position: 'absolute',
+              inset: '1.2cm',
+              border: `1px solid ${config?.title.color || '#fff'}`,
+              opacity: 0.6,
+              pointerEvents: 'none',
+              zIndex: 10
+            }}>
+              <div style={{
+                position: 'absolute',
+                inset: '4px',
+                border: `1px solid ${config?.title.color || '#fff'}`,
+                opacity: 0.2
+              }}></div>
+            </div>
+
+            <div style={{
+              position: 'relative',
+              zIndex: 20,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              textAlign: 'center',
+              width: '100%',
+              height: '100%',
+              padding: '2rem'
+            }}>
+              {/* Subtle minimalist ornament */}
+              <div style={{ opacity: 0.85, color: config?.title.color || '#fff' }}>
+                <Flower2 size={20} strokeWidth={1} />
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

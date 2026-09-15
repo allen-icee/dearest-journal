@@ -31,24 +31,57 @@ export const Toast: React.FC<ToastProps> = ({ toast, onRemove }) => {
     info: Info
   }[toast.type];
 
-  const colorClass = `toast-icon-${toast.type}`;
+  const colors = {
+    success: '#10b981',
+    error: '#ef4444',
+    warning: '#f59e0b',
+    info: '#3b82f6'
+  };
 
   return (
-    <div className="toast" role="status" aria-live="polite">
-      <div className={`toast-icon ${colorClass}`}>
-        <Icon size={20} />
-      </div>
-      <div className="toast-content">
-        <div className="toast-title">{toast.title}</div>
-        {toast.description && <div className="toast-desc">{toast.description}</div>}
-      </div>
-      <button 
-        className="toast-close-btn" 
-        onClick={() => onRemove(toast.id)}
-        aria-label="Close notification"
+    <>
+      <style>
+        {`
+          @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+        `}
+      </style>
+      <div 
+        className="toast" 
+        role="status" 
+        aria-live="polite"
+        style={{
+          background: '#ffffff',
+          color: '#333333',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '12px',
+          minWidth: '300px',
+          pointerEvents: 'auto',
+          animation: 'slideInRight 0.3s ease-out forwards',
+          borderLeft: `4px solid ${colors[toast.type]}`
+        }}
       >
-        <X size={16} />
-      </button>
-    </div>
+        <div style={{ color: colors[toast.type], marginTop: '2px' }}>
+          <Icon size={20} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: toast.description ? '4px' : '0' }}>{toast.title}</div>
+          {toast.description && <div style={{ fontSize: '13px', color: '#666666' }}>{toast.description}</div>}
+        </div>
+        <button 
+          onClick={() => onRemove(toast.id)}
+          aria-label="Close notification"
+          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#999999', padding: '2px', marginLeft: '8px' }}
+        >
+          <X size={16} />
+        </button>
+      </div>
+    </>
   );
 };
