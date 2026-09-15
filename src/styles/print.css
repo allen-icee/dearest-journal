@@ -36,6 +36,7 @@
   /* Ensure the journal pages break correctly and have no shadow */
   .journal-physical-page {
     box-shadow: none !important;
+    border: 1px solid #d3d3d3 !important; /* Cut-line guide */
     break-after: page;
     page-break-after: always;
     width: 15cm !important;

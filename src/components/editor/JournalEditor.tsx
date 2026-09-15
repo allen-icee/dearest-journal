@@ -11,7 +11,6 @@ import { JournalBackCover } from '../JournalBackCover';
 import { YearSelector } from './YearSelector';
 import { MonthSelector } from './MonthSelector';
 import { PageSelector } from './PageSelector';
-import { SettingsModal } from './SettingsModal';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Tooltip } from './Tooltip';
 
@@ -36,7 +35,6 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
 }) => {
   const [activeSlot, setActiveSlot] = useState<string>('cover');
   const [zoom, setZoom] = useState<number>(1);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Safely fallback to defaults if config is missing or using the old schema (e.g. older journal)
   const getSafeConfig = (): JournalConfig => {
@@ -69,12 +67,10 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
     return {
       ...base,
       frontCover: {
-        ...base.frontCover,
-        color: document.coverColor || base.frontCover.color
+        ...base.frontCover
       },
       backCover: {
-        ...base.backCover,
-        color: document.coverColor || base.backCover.color
+        ...base.backCover
       }
     };
   };
@@ -83,9 +79,6 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Do not block normal interactions in the settings modal
-      if (isSettingsOpen) return;
-
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
         e.preventDefault();
         window.document.execCommand('undo', false, undefined);
@@ -106,7 +99,7 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [isSettingsOpen]);
+  }, []);
 
   const handleConfigSave = (newConfig: JournalConfig) => {
     onDocumentChange({
@@ -147,10 +140,11 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
       {/* Top Toolbar */}
       <Toolbar 
         document={document}
+        config={config}
         saveStatus={saveStatus}
         onImport={onImport}
         onExport={onExport}
-        onOpenSettings={() => setIsSettingsOpen(true)}
+        onConfigChange={handleConfigSave}
       />
 
       {/* Document Workspace */}
@@ -226,13 +220,6 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
         onZoomChange={setZoom}
       />
 
-      {isSettingsOpen && (
-        <SettingsModal 
-          config={config} 
-          onSave={handleConfigSave} 
-          onClose={() => setIsSettingsOpen(false)} 
-        />
-      )}
     </div>
   );
 };

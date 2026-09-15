@@ -5,9 +5,10 @@ interface TooltipProps {
   children: React.ReactNode;
   delay?: number;
   position?: 'top' | 'bottom' | 'left' | 'right';
+  align?: 'left' | 'center' | 'right';
 }
 
-export const Tooltip: React.FC<TooltipProps> = ({ content, children, delay = 300, position = 'bottom' }) => {
+export const Tooltip: React.FC<TooltipProps> = ({ content, children, delay = 300, position = 'bottom', align = 'center' }) => {
   const [isVisible, setIsVisible] = useState(false);
   const timeoutRef = useRef<number | null>(null);
 
@@ -42,7 +43,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children, delay = 300
     >
       {children}
       {isVisible && (
-        <div className={`tooltip-content tooltip-${position}`}>
+        <div className={`tooltip-content tooltip-${position} tooltip-align-${align}`}>
           {content}
         </div>
       )}

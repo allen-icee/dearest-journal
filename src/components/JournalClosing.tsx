@@ -7,7 +7,7 @@ interface JournalClosingProps {
 }
 
 export const JournalClosing: React.FC<JournalClosingProps> = ({ config }) => {
-  const fontClass = config.closing.fontFamily.includes('Italic') ? 'ice-font-italic' : 'ice-font';
+  const fontClass = 'ice-font-italic';
 
   const renderWithRegularPunctuation = (text: string) => {
     const parts = text.split(/([.,!?]+)/);

@@ -97,7 +97,7 @@ export const JournalLines: React.FC<JournalLinesProps> = ({ content, onChange, i
       {/* Text Content Overlay */}
       <div 
         ref={scrollWrapperRef}
-        className={getFontClass(config.body.fontFamily)}
+        className="ice-font"
         style={{
           position: 'relative',
           top: '0.15cm',
@@ -115,7 +115,7 @@ export const JournalLines: React.FC<JournalLinesProps> = ({ content, onChange, i
         }}
       >
         <div style={{ textAlign: 'left', color: config.greeting.color, fontSize: config.greeting.fontSize }} contentEditable={false}>
-          <span className={getFontClass(config.greeting.fontFamily)}>{config.title.text}</span><span className="ice-font">,</span>
+          <span className="ice-font-italic">{config.title.text}</span><span className="ice-font">,</span>
         </div>
         
         {/* The rich-text editable writing surface */}

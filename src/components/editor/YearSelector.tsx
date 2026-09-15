@@ -7,9 +7,9 @@ interface YearSelectorProps {
 }
 
 export const YearSelector: React.FC<YearSelectorProps> = ({ year, onChange }) => {
-  // Generate a list of years (e.g., current year - 1 to current year + 5)
+  // Generate a list of years backwards from the current year
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 10 }, (_, i) => currentYear - 2 + i);
+  const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
 
   const yearItems = years.map(y => ({
     id: String(y),

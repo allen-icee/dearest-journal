@@ -53,7 +53,7 @@ export const JournalCover: React.FC<JournalCoverProps> = ({ month, year, config 
           </div>
 
           <div 
-            className={config.title.fontFamily.includes('Italic') ? 'ice-font-italic' : 'ice-font'} 
+            className="ice-font-italic" 
             style={{ 
               fontSize: config.title.fontSize, 
               color: config.title.color, 

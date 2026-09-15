@@ -50,15 +50,16 @@ export const StatusBar: React.FC<StatusBarProps> = ({
             </button>
           </Tooltip>
           
-          <Tooltip content="Reset zoom" position="top">
-            <button 
-              className="toolbar-btn" 
-              style={{ padding: '0.2rem 0.4rem', fontSize: '0.75rem' }}
-              onClick={() => onZoomChange(1)}
-            >
-              {Math.round(zoom * 100)}%
-            </button>
-          </Tooltip>
+          <input 
+            type="range" 
+            min="0.5" 
+            max="2" 
+            step="0.1" 
+            value={zoom} 
+            onChange={(e) => onZoomChange(Number(e.target.value))}
+            className="zoom-slider"
+            aria-label="Zoom"
+          />
 
           <Tooltip content="Zoom in" position="top">
             <button 
@@ -68,6 +69,16 @@ export const StatusBar: React.FC<StatusBarProps> = ({
               aria-label="Zoom in"
             >
               <Plus size={14} />
+            </button>
+          </Tooltip>
+
+          <Tooltip content="Reset zoom" position="top">
+            <button 
+              className="toolbar-btn" 
+              style={{ padding: '0.2rem 0.4rem', fontSize: '0.75rem', minWidth: '40px' }}
+              onClick={() => onZoomChange(1)}
+            >
+              {Math.round(zoom * 100)}%
             </button>
           </Tooltip>
         </div>

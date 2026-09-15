@@ -49,10 +49,11 @@ function App() {
       if (stored) {
         setDocument(stored.document);
       } else {
-        const newDoc = {
+        const newDoc: JournalDocument = {
           month,
           year,
-          pages: generateMonthPages(month, year, "")
+          pages: generateMonthPages(month, year, ""),
+          config: JSON.parse(JSON.stringify(DEFAULT_JOURNAL_CONFIG))
         };
         setDocument(newDoc);
         if (notifyCreation) {
@@ -190,6 +191,7 @@ function App() {
       {/* Interactive Editor UI (Hidden during print) */}
       <div className="no-print" style={{ width: '100%' }}>
         <JournalEditor 
+          key={`${document.month}-${document.year}`}
           document={document} 
           saveStatus={saveStatus}
           onMonthChange={handleMonthChange}
