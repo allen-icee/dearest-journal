@@ -21,6 +21,12 @@ interface ToolbarProps {
   onImport: () => void;
   onExport: () => void;
   onConfigChange: (newConfig: JournalConfig) => void;
+  activeFormats: {
+    justifyLeft: boolean;
+    justifyCenter: boolean;
+    justifyRight: boolean;
+    justifyFull: boolean;
+  };
 }
 
 const renderSaveStatus = (status: SaveStatus) => {
@@ -53,7 +59,8 @@ export const Toolbar: React.FC<ToolbarProps> = React.memo(({
   onMonthChange,
   onImport,
   onExport,
-  onConfigChange
+  onConfigChange,
+  activeFormats
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   /**
@@ -78,6 +85,11 @@ export const Toolbar: React.FC<ToolbarProps> = React.memo(({
 
   const execCmd = (cmd: string) => {
     window.document.execCommand(cmd, false, undefined);
+    
+    // Force the editor to re-evaluate the active state AFTER the DOM mutates
+    setTimeout(() => {
+      window.document.dispatchEvent(new Event('selectionchange'));
+    }, 10);
   };
 
   const updateConfig = (updater: (prev: JournalConfig) => JournalConfig) => {
@@ -186,22 +198,22 @@ export const Toolbar: React.FC<ToolbarProps> = React.memo(({
           <div className="ribbon-group-actions">
             <div className="alignment-group">
               <Tooltip content="Align Left" position="bottom">
-                <button className="alignment-btn" onClick={() => execCmd('justifyLeft')} aria-label="Align Left">
+                <button className={`alignment-btn ${activeFormats.justifyLeft ? 'active' : ''}`} onClick={() => execCmd('justifyLeft')} onMouseDown={(e) => e.preventDefault()} aria-label="Align Left">
                   <AlignLeft size={14} />
                 </button>
               </Tooltip>
               <Tooltip content="Align Center" position="bottom">
-                <button className="alignment-btn" onClick={() => execCmd('justifyCenter')} aria-label="Align Center">
+                <button className={`alignment-btn ${activeFormats.justifyCenter ? 'active' : ''}`} onClick={() => execCmd('justifyCenter')} onMouseDown={(e) => e.preventDefault()} aria-label="Align Center">
                   <AlignCenter size={14} />
                 </button>
               </Tooltip>
               <Tooltip content="Align Right" position="bottom">
-                <button className="alignment-btn" onClick={() => execCmd('justifyRight')} aria-label="Align Right">
+                <button className={`alignment-btn ${activeFormats.justifyRight ? 'active' : ''}`} onClick={() => execCmd('justifyRight')} onMouseDown={(e) => e.preventDefault()} aria-label="Align Right">
                   <AlignRight size={14} />
                 </button>
               </Tooltip>
               <Tooltip content="Justify" position="bottom">
-                <button className="alignment-btn" onClick={() => execCmd('justifyFull')} aria-label="Justify">
+                <button className={`alignment-btn ${activeFormats.justifyFull ? 'active' : ''}`} onClick={() => execCmd('justifyFull')} onMouseDown={(e) => e.preventDefault()} aria-label="Justify">
                   <AlignJustify size={14} />
                 </button>
               </Tooltip>

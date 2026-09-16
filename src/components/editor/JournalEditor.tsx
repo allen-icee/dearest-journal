@@ -37,6 +37,51 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
 }) => {
   const [zoom, setZoom] = useState<number>(1);
   const [activePageId, setActivePageId] = useState<string>('Front Cover');
+  const [activeFormats, setActiveFormats] = useState({
+    justifyLeft: false,
+    justifyCenter: false,
+    justifyRight: false,
+    justifyFull: false
+  });
+
+  useEffect(() => {
+    const updateFormatState = () => {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return;
+
+      // Get the immediate element wrapping the text cursor
+      let node = selection.anchorNode;
+      if (node && node.nodeType === 3) {
+        node = node.parentNode;
+      }
+      if (!node || !(node instanceof Element)) return;
+
+      const style = window.getComputedStyle(node);
+      const currentAlign = style.textAlign || 'left';
+
+      setActiveFormats(prev => {
+        const newState = {
+          justifyLeft: currentAlign === 'left' || currentAlign === 'start' || window.document.queryCommandState('justifyLeft'),
+          justifyCenter: currentAlign === 'center' || window.document.queryCommandState('justifyCenter'),
+          justifyRight: currentAlign === 'right' || window.document.queryCommandState('justifyRight'),
+          justifyFull: currentAlign === 'justify' || window.document.queryCommandState('justifyFull')
+        };
+        
+        // Only trigger React re-render if the state actually changed
+        return JSON.stringify(prev) === JSON.stringify(newState) ? prev : newState;
+      });
+    };
+
+    window.document.addEventListener('selectionchange', updateFormatState);
+    // Also listen globally for clicks and keys to ensure reliable state updates
+    window.document.addEventListener('mouseup', updateFormatState);
+    window.document.addEventListener('keyup', updateFormatState);
+    return () => {
+      window.document.removeEventListener('selectionchange', updateFormatState);
+      window.document.removeEventListener('mouseup', updateFormatState);
+      window.document.removeEventListener('keyup', updateFormatState);
+    };
+  }, []);
 
   useEffect(() => {
     if (window.innerWidth < 640) {
@@ -99,20 +144,7 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
     wrappers[targetIndex].scrollIntoView({ behavior: 'smooth' });
   }, []);
 
-  const getWordCount = useCallback(() => {
-    let total = 0;
-    document.pages.forEach(page => {
-      if (!page.content) return;
-      const temp = window.document.createElement('div');
-      temp.innerHTML = page.content;
-      const text = temp.textContent || temp.innerText || '';
-      const words = text.trim().split(/\s+/);
-      if (text.trim() !== '') {
-        total += words.length;
-      }
-    });
-    return total;
-  }, [document.pages]);
+
 
   const handlePageContentChange = useCallback((pageNumber: number, html: string) => {
     onContentChange(pageNumber, html);
@@ -143,6 +175,7 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
         onImport={onImport}
         onExport={onExport}
         onConfigChange={onConfigChange}
+        activeFormats={activeFormats}
       />
 
       {/* Document Workspace */}
@@ -202,7 +235,6 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
       <StatusBar
         isVisible={true}
         activePageId={activePageId}
-        wordCount={getWordCount()}
         zoom={zoom}
         onZoomChange={setZoom}
       />
