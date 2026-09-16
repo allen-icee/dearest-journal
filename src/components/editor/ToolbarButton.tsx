@@ -25,8 +25,9 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   return (
     <Tooltip content={tooltip} position="bottom">
       <button 
-        className={`toolbar-btn ${isActive ? 'active' : ''} ${className}`}
+        className={`toolbar-btn ${isActive ? 'active bg-gray-300 shadow-inner rounded' : ''} ${className}`}
         onClick={onClick}
+        onMouseDown={(e) => e.preventDefault()}
         disabled={disabled}
         aria-label={tooltip}
       >

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { LINE_HEIGHT_CM } from '../utils/typography';
 import { JournalClosing } from './JournalClosing';
 import { type JournalConfig } from '../types/journalConfig';
@@ -15,15 +15,15 @@ interface JournalLinesProps {
  * It strictly enforces physical bounding limits to simulate a real piece of paper,
  * leveraging native undo buffers to gracefully revert overflow edits.
  */
-export const JournalLines: React.FC<JournalLinesProps> = ({ 
-  content, 
-  isEditable = false, 
+export const JournalLines: React.FC<JournalLinesProps> = ({
+  content,
+  isEditable = false,
   onChange,
-  config 
+  config
 }) => {
   const textContainerRef = useRef<HTMLDivElement>(null);
   const scrollWrapperRef = useRef<HTMLDivElement>(null);
-  
+
   const lastValidHtml = useRef<string>(content);
   const isReverting = useRef(false);
 
@@ -37,6 +37,23 @@ export const JournalLines: React.FC<JournalLinesProps> = ({
     }
   }, [content]);
 
+  const scrollToCursor = useCallback(() => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+
+    // If the cursor is getting close to the bottom of the viewport 
+    // (e.g., within 300px to account for the floating footer and signature)
+    if (rect.bottom > window.innerHeight - 300) {
+      window.scrollBy({
+        top: rect.bottom - (window.innerHeight - 300),
+        behavior: 'smooth'
+      });
+    }
+  }, []);
+
   const handleInput = () => {
     if (isReverting.current) return;
     if (!scrollWrapperRef.current || !textContainerRef.current) return;
@@ -44,14 +61,14 @@ export const JournalLines: React.FC<JournalLinesProps> = ({
     // Check if the current actual rendered height exceeds the physical bounding box
     if (scrollWrapperRef.current.scrollHeight > scrollWrapperRef.current.clientHeight) {
       isReverting.current = true;
-      
+
       // Native undo flawlessly reverts the DOM modification (typing, pasting, bolding)
       // and perfectly preserves the cursor selection before the foul edit.
       document.execCommand('undo');
 
       // Fallback just in case undo didn't resolve the height (e.g., complex paste)
       if (scrollWrapperRef.current.scrollHeight > scrollWrapperRef.current.clientHeight) {
-         textContainerRef.current.innerHTML = lastValidHtml.current;
+        textContainerRef.current.innerHTML = lastValidHtml.current;
       }
 
       isReverting.current = false;
@@ -62,6 +79,7 @@ export const JournalLines: React.FC<JournalLinesProps> = ({
       if (onChange) {
         onChange(textContainerRef.current.innerHTML);
       }
+      scrollToCursor();
     }
   };
 
@@ -72,10 +90,16 @@ export const JournalLines: React.FC<JournalLinesProps> = ({
     }
   };
 
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      scrollToCursor();
+    }
+  };
+
   return (
     <div id="journal-lines-container" style={{
       position: 'relative',
-      height: '100%', 
+      height: '100%',
       width: '100%',
       boxSizing: 'border-box',
     }}>
@@ -99,7 +123,7 @@ export const JournalLines: React.FC<JournalLinesProps> = ({
       </div>
 
       {/* Text Content Overlay */}
-      <div 
+      <div
         ref={scrollWrapperRef}
         className="ice-font"
         style={{
@@ -121,17 +145,18 @@ export const JournalLines: React.FC<JournalLinesProps> = ({
         <div style={{ textAlign: 'left', color: config.greeting.color, fontSize: config.greeting.fontSize }} contentEditable={false}>
           <span className="ice-font-italic">{config.title.text}</span><span className="ice-font">,</span>
         </div>
-        
+
         {/* The rich-text editable writing surface */}
-        <div 
+        <div
           ref={textContainerRef}
           contentEditable={isEditable}
           onInput={handleInput}
           onKeyDown={handleKeyDown}
+          onKeyUp={handleKeyUp}
           suppressContentEditableWarning={true}
-          style={{ 
-            textAlign: 'left', 
-            minHeight: '1em', 
+          style={{
+            textAlign: 'left',
+            minHeight: '1em',
             outline: 'none',
             whiteSpace: 'pre-wrap'
           }}

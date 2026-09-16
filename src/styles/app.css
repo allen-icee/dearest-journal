@@ -619,7 +619,7 @@ body {
   z-index: 50;
 }
 .status-bar {
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;

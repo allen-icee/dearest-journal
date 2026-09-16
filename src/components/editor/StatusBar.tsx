@@ -23,16 +23,8 @@ export const StatusBar: React.FC<StatusBarProps> = React.memo(({
     <div className="status-bar-wrapper no-print">
       <div className="status-bar">
         <span>{activePageId}</span>
-        {!activePageId.includes('Cover') && (
-          <>
-            <span className="status-dot">•</span>
-            <span>{wordCount} {wordCount === 1 ? 'word' : 'words'}</span>
-          </>
-        )}
 
-        <div className="toolbar-divider hidden sm:block" style={{ height: '14px', margin: '0 0.5rem' }} />
-
-        <div className="mobile-hidden" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           <Tooltip content="Zoom out" position="top">
             <button 
               className="toolbar-btn" 
@@ -51,7 +43,7 @@ export const StatusBar: React.FC<StatusBarProps> = React.memo(({
             step="0.1" 
             value={zoom} 
             onChange={(e) => onZoomChange(Number(e.target.value))}
-            className="zoom-slider"
+            className="zoom-slider hidden sm:block"
             aria-label="Zoom"
           />
 
