@@ -10,7 +10,6 @@ import { compressImageFile } from '../../utils/imageUtils';
 import { MONTH_NAMES } from '../../utils/calendar';
 import { Dropdown } from './Dropdown';
 import { SupportModal } from '../ui/SupportModal';
-import { ToolbarButton } from './ToolbarButton';
 
 interface ToolbarProps {
   document: JournalDocument;

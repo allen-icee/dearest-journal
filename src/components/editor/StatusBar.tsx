@@ -5,7 +5,6 @@ import { Tooltip } from './Tooltip';
 interface StatusBarProps {
   isVisible: boolean;
   activePageId: string;
-  wordCount: number;
   zoom: number;
   onZoomChange: (z: number) => void;
 }
@@ -13,7 +12,6 @@ interface StatusBarProps {
 export const StatusBar: React.FC<StatusBarProps> = React.memo(({ 
   isVisible, 
   activePageId,
-  wordCount,
   zoom,
   onZoomChange
 }) => {

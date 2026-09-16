@@ -144,20 +144,7 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
     wrappers[targetIndex].scrollIntoView({ behavior: 'smooth' });
   }, []);
 
-  const getWordCount = useCallback(() => {
-    let total = 0;
-    document.pages.forEach(page => {
-      if (!page.content) return;
-      const temp = window.document.createElement('div');
-      temp.innerHTML = page.content;
-      const text = temp.textContent || temp.innerText || '';
-      const words = text.trim().split(/\s+/);
-      if (text.trim() !== '') {
-        total += words.length;
-      }
-    });
-    return total;
-  }, [document.pages]);
+
 
   const handlePageContentChange = useCallback((pageNumber: number, html: string) => {
     onContentChange(pageNumber, html);
@@ -248,7 +235,6 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
       <StatusBar
         isVisible={true}
         activePageId={activePageId}
-        wordCount={getWordCount()}
         zoom={zoom}
         onZoomChange={setZoom}
       />
