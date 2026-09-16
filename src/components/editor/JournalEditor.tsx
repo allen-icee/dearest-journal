@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { type JournalDocument } from '../../types/journal';
 import { type SaveStatus } from '../../storage/storageTypes';
 import { type JournalConfig } from '../../types/journalConfig';
@@ -20,10 +20,15 @@ interface JournalEditorProps {
   onConfigChange: (updatedConfig: JournalConfig) => void;
 }
 
-export const JournalEditor: React.FC<JournalEditorProps> = ({ 
-  document, 
+/**
+ * JournalEditor is the main container for the application.
+ * It integrates the global toolbar, the physical page views, and the status bar,
+ * managing the orchestration of the document state and user interface.
+ */
+export const JournalEditor: React.FC<JournalEditorProps> = ({
+  document,
   saveStatus,
-  onMonthChange, 
+  onMonthChange,
   onContentChange,
   onImport,
   onExport,
@@ -33,7 +38,11 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
   const [zoom, setZoom] = useState<number>(1);
   const [activePageId, setActivePageId] = useState<string>('Front Cover');
 
-
+  useEffect(() => {
+    if (window.innerWidth < 640) {
+      setZoom(window.innerWidth / 600);
+    }
+  }, []);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -78,19 +87,19 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
     return () => observer.disconnect();
   }, [document.pages, zoom]);
 
-  const handleScroll = (direction: 'up' | 'down', currentId: string) => {
+  const handleScroll = useCallback((direction: 'up' | 'down', currentId: string) => {
     const wrappers = Array.from(window.document.querySelectorAll('.page-wrapper'));
     const currentIndex = wrappers.findIndex(w => w.getAttribute('data-page-id') === currentId);
     if (currentIndex === -1) return;
-    
+
     let targetIndex = currentIndex;
     if (direction === 'up' && currentIndex > 0) targetIndex = currentIndex - 1;
     if (direction === 'down' && currentIndex < wrappers.length - 1) targetIndex = currentIndex + 1;
-    
-    wrappers[targetIndex].scrollIntoView({ behavior: 'smooth' });
-  };
 
-  const getWordCount = () => {
+    wrappers[targetIndex].scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
+  const getWordCount = useCallback(() => {
     let total = 0;
     document.pages.forEach(page => {
       if (!page.content) return;
@@ -103,16 +112,15 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
       }
     });
     return total;
-  };
+  }, [document.pages]);
+
+  const handlePageContentChange = useCallback((pageNumber: number, html: string) => {
+    onContentChange(pageNumber, html);
+  }, [onContentChange]);
 
   return (
     <div className="app-container">
-      {/**
-        * Dynamically injects user-uploaded custom fonts at runtime.
-        * Converts the stored Base64 payload into a native @font-face rule,
-        * allowing the journal to render custom typography entirely client-side 
-        * without external font requests or local installation.
-        */}
+
       {config.customFonts?.map(font => (
         <style key={font.name}>
           {`
@@ -125,7 +133,7 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
       ))}
 
       {/* Top Toolbar */}
-      <Toolbar 
+      <Toolbar
         document={document}
         config={config}
         saveStatus={saveStatus}
@@ -139,15 +147,16 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
 
       {/* Document Workspace */}
       <div className="document-workspace">
+
         {/* Scaled Render Layer */}
         <div style={{ zoom: zoom, transition: 'zoom 0.15s ease', display: 'flex', flexDirection: 'column', gap: '40px', alignItems: 'center' }}>
-          
+
           <div className="page-wrapper" data-page-id="Front Cover">
-            <div className="page-header-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>Front Cover</span>
-              <div style={{ display: 'flex', gap: '4px' }}>
-                <button className="canva-nav-btn" onClick={() => handleScroll('up', 'Front Cover')} aria-label="Previous Page"><ChevronUp size={16} /></button>
-                <button className="canva-nav-btn" onClick={() => handleScroll('down', 'Front Cover')} aria-label="Next Page"><ChevronDown size={16} /></button>
+            <div className="page-nav-container no-print">
+              <span style={{ fontWeight: 500 }}>Front Cover</span>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', alignItems: 'center' }}>
+                <ChevronUp size={20} style={{ cursor: 'pointer' }} onClick={() => handleScroll('up', 'Front Cover')} />
+                <ChevronDown size={20} style={{ cursor: 'pointer' }} onClick={() => handleScroll('down', 'Front Cover')} />
               </div>
             </div>
             <JournalCover month={document.month} year={document.year} config={config} />
@@ -157,17 +166,17 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
             const pageId = `Page ${p.pageNumber} of ${document.pages.length}`;
             return (
               <div key={p.pageNumber} className="page-wrapper" data-page-id={pageId}>
-                <div className="page-header-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Day {p.pageNumber} - {p.date}</span>
-                  <div style={{ display: 'flex', gap: '4px' }}>
-                    <button className="canva-nav-btn" onClick={() => handleScroll('up', pageId)} aria-label="Previous Page"><ChevronUp size={16} /></button>
-                    <button className="canva-nav-btn" onClick={() => handleScroll('down', pageId)} aria-label="Next Page"><ChevronDown size={16} /></button>
+                <div className="page-nav-container no-print">
+                  <span style={{ fontWeight: 500 }}>Day {p.pageNumber} - {p.date}</span>
+                  <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', alignItems: 'center' }}>
+                    <ChevronUp size={20} style={{ cursor: 'pointer' }} onClick={() => handleScroll('up', pageId)} />
+                    <ChevronDown size={20} style={{ cursor: 'pointer' }} onClick={() => handleScroll('down', pageId)} />
                   </div>
                 </div>
-                <JournalPage 
-                  date={p.date} 
-                  content={p.content} 
-                  onChange={(html) => onContentChange(p.pageNumber, html)}
+                <JournalPage
+                  date={p.date}
+                  content={p.content}
+                  onChange={(html) => handlePageContentChange(p.pageNumber, html)}
                   isEditable={true}
                   config={config}
                 />
@@ -176,11 +185,11 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
           })}
 
           <div className="page-wrapper" data-page-id="Back Cover">
-            <div className="page-header-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>Back Cover</span>
-              <div style={{ display: 'flex', gap: '4px' }}>
-                <button className="canva-nav-btn" onClick={() => handleScroll('up', 'Back Cover')} aria-label="Previous Page"><ChevronUp size={16} /></button>
-                <button className="canva-nav-btn" onClick={() => handleScroll('down', 'Back Cover')} aria-label="Next Page"><ChevronDown size={16} /></button>
+            <div className="page-nav-container no-print">
+              <span style={{ fontWeight: 500 }}>Back Cover</span>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', alignItems: 'center' }}>
+                <ChevronUp size={20} style={{ cursor: 'pointer' }} onClick={() => handleScroll('up', 'Back Cover')} />
+                <ChevronDown size={20} style={{ cursor: 'pointer' }} onClick={() => handleScroll('down', 'Back Cover')} />
               </div>
             </div>
             <JournalBackCover config={config} />
@@ -190,7 +199,7 @@ export const JournalEditor: React.FC<JournalEditorProps> = ({
       </div>
 
       {/* Floating Status Bar with Zoom Controls */}
-      <StatusBar 
+      <StatusBar
         isVisible={true}
         activePageId={activePageId}
         wordCount={getWordCount()}

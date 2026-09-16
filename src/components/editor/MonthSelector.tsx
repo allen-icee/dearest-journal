@@ -7,7 +7,7 @@ interface MonthSelectorProps {
   onChange: (month: number) => void;
 }
 
-export const MonthSelector: React.FC<MonthSelectorProps> = ({ month, onChange }) => {
+export const MonthSelector: React.FC<MonthSelectorProps> = React.memo(({ month, onChange }) => {
   const activeMonthLabel = MONTH_NAMES[month - 1];
   
   const monthItems = MONTH_NAMES.map((name, i) => ({
@@ -24,4 +24,4 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({ month, onChange })
       width="140px"
     />
   );
-};
+});

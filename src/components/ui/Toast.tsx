@@ -15,9 +15,12 @@ interface ToastProps {
   onRemove: (id: string) => void;
 }
 
+/**
+ * Toast component for displaying ephemeral, non-blocking notifications.
+ * It animates in from the bottom right and automatically dismisses itself.
+ */
 export const Toast: React.FC<ToastProps> = ({ toast, onRemove }) => {
   useEffect(() => {
-    // Auto-dismiss after 3.5 seconds
     const timer = setTimeout(() => {
       onRemove(toast.id);
     }, 3500);

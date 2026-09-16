@@ -18,15 +18,14 @@ export function generateMonthPages(month: number, year: number, initialContent: 
   const pages: JournalPageData[] = [];
 
   for (let i = 1; i <= days; i++) {
-    // MM-DD-YYYY format
     const mm = String(month).padStart(2, '0');
     const dd = String(i).padStart(2, '0');
     const yyyy = year;
 
     pages.push({
-      pageNumber: i, // Physical page number within the calendar (1 to days)
+      pageNumber: i,
       date: `${mm}-${dd}-${yyyy}`,
-      content: i === 1 ? initialContent : '' // only pre-fill day 1 if provided
+      content: i === 1 ? initialContent : ''
     });
   }
 

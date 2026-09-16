@@ -1,15 +1,15 @@
-# DearestJournal
+# Dearest Journal
 
-A local-first, privacy-focused digital journal replicating the physical experience of a premium stationery notebook directly in the browser. Designed with strict 15cm x 21.6cm physical print dimensions and a seamless, continuous scrolling canvas.
+A local-first, privacy-focused digital journal that replicates the experience of writing in a physical notebook directly in the browser. Designed with strict 15cm x 21.6cm physical print dimensions and a seamless, continuous scrolling canvas.
 
-✨ Features
+## ✨ Features
 
 - **Local-First Architecture:** Zero backend. Complete privacy using IndexedDB for local persistence.
 - **Dynamic Font Engine:** Upload custom `.ttf`/`.otf` fonts converted securely via Base64.
-- **Premium UI:** Microsoft Word-style Ribbon navigation and a Canva-style continuous vertical workspace.
-- **Stationery Aesthetic:** Elegant, foil-stamped cover designs with pastel themes and custom decorative typography.
+- **Familiar UI:** A robust formatting ribbon and a continuous vertical workspace.
+- **Customizable Aesthetic:** Personalized cover designs with custom themes and typography.
 
-Languages & Tools (⌐■_■)
+## 🛠 Languages & Tools
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
@@ -17,13 +17,13 @@ Languages & Tools (⌐■_■)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![IndexedDB](https://img.shields.io/badge/IndexedDB-4B8BBE?style=for-the-badge&logo=sqlite&logoColor=white)
 
-🚀 Getting Started
+## 🚀 Getting Started
 
-Prerequisites
+### Prerequisites
 
 - Node.js & npm
 
-Installation
+### Installation
 
 ```bash
 git clone <repository-url>
@@ -32,14 +32,14 @@ cd dearest-journal
 npm install
 ```
 
-Run
+### Run
 
 ```bash
 # Start the Vite development server
 npm run dev
 ```
 
-📄 License
+## 📄 License
 
 Copyright (c) 2026 Allen Icee Dequiros
 

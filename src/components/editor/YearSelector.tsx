@@ -6,7 +6,7 @@ interface YearSelectorProps {
   onChange: (year: number) => void;
 }
 
-export const YearSelector: React.FC<YearSelectorProps> = ({ year, onChange }) => {
+export const YearSelector: React.FC<YearSelectorProps> = React.memo(({ year, onChange }) => {
   // Generate a list of years backwards from the current year
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
@@ -25,4 +25,4 @@ export const YearSelector: React.FC<YearSelectorProps> = ({ year, onChange }) =>
       width="100px"
     />
   );
-};
+});

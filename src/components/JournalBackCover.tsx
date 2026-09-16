@@ -3,13 +3,16 @@ import { Flower2 } from 'lucide-react';
 import { type JournalConfig } from '../types/journalConfig';
 
 interface JournalBackCoverProps {
-  color?: string; // deprecated
   config?: JournalConfig;
 }
 
-export const JournalBackCover: React.FC<JournalBackCoverProps> = ({ config, color }) => {
+/**
+ * Renders the back cover of the journal, matching the aesthetic
+ * configuration of the front cover (color or image background).
+ */
+export const JournalBackCover: React.FC<JournalBackCoverProps> = React.memo(({ config }) => {
   const getBackgroundStyle = (): React.CSSProperties => {
-    if (!config) return { backgroundColor: color || 'var(--cover-background)' };
+    if (!config) return { backgroundColor: 'var(--cover-background)' };
     const cv = config.backCover;
     if (cv.type === 'image' && cv.image) {
       return {
@@ -19,7 +22,7 @@ export const JournalBackCover: React.FC<JournalBackCoverProps> = ({ config, colo
         backgroundRepeat: 'no-repeat',
       };
     }
-    return { backgroundColor: cv.color || color };
+    return { backgroundColor: cv.color || 'var(--cover-background)' };
   };
 
   return (
@@ -72,4 +75,4 @@ export const JournalBackCover: React.FC<JournalBackCoverProps> = ({ config, colo
       </div>
     </div>
   );
-};
+});

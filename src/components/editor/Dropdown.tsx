@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, Check } from 'lucide-react';
 
 interface DropdownItem {
@@ -19,13 +20,19 @@ interface DropdownProps {
   footer?: React.ReactNode;
 }
 
-export const Dropdown: React.FC<DropdownProps> = ({ label, items, selectedId, onSelect, title, width = '200px', triggerClassName = '', triggerStyle, footer }) => {
+export const Dropdown: React.FC<DropdownProps> = React.memo(({ label, items, selectedId, onSelect, title, width = '200px', triggerClassName = '', triggerStyle, footer }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (
+        triggerRef.current && !triggerRef.current.contains(target) &&
+        menuRef.current && !menuRef.current.contains(target)
+      ) {
         setIsOpen(false);
       }
     };
@@ -48,20 +55,29 @@ export const Dropdown: React.FC<DropdownProps> = ({ label, items, selectedId, on
     setIsOpen(false);
   };
 
+  const toggleDropdown = () => {
+    if (!isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setPos({ top: rect.bottom + 4, left: rect.left });
+    }
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <div className="custom-dropdown" ref={containerRef} title={title}>
+    <div className="custom-dropdown" title={title}>
       <button 
+        ref={triggerRef}
         className={`dropdown-trigger ${isOpen ? 'active' : ''} ${triggerClassName}`} 
         style={triggerStyle}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggleDropdown}
         aria-expanded={isOpen}
       >
         <span className="dropdown-label-content">{label}</span>
         <ChevronDown size={14} className="dropdown-caret" />
       </button>
 
-      {isOpen && (
-        <div className="dropdown-menu" style={{ width, minWidth: '100%' }} role="menu">
+      {isOpen && createPortal(
+        <div ref={menuRef} className="dropdown-menu" style={{ position: 'fixed', top: pos.top, left: pos.left, width, minWidth: width, zIndex: 9999 }} role="menu">
           {items.map((item, index) => {
             if (item.isSeparator) {
               return <div key={`sep-${index}`} className="dropdown-separator" role="separator" />;
@@ -86,8 +102,9 @@ export const Dropdown: React.FC<DropdownProps> = ({ label, items, selectedId, on
               </div>
             </>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
-};
+});

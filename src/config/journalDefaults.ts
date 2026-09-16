@@ -28,7 +28,7 @@ export const DEFAULT_JOURNAL_CONFIG: JournalConfig = {
     alignment: "center",
   },
   signature: {
-    enabled: true,
+    enabled: false,
     image: "/signature/OI-DigitalSignature-Icee.png",
     opacity: 0.65,
     width: "3cm",

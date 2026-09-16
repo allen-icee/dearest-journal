@@ -6,13 +6,23 @@ import { type JournalConfig } from '../types/journalConfig';
 
 interface JournalPageProps {
   date: string | null;
-  content: string; // HTML string
+  content: string;
   onChange?: (html: string) => void;
   isEditable?: boolean;
   config: JournalConfig;
 }
 
-export const JournalPage: React.FC<JournalPageProps> = ({ date, content, onChange, isEditable = false, config }) => {
+/**
+ * JournalPage coordinates the layout of a single physical page,
+ * rendering the decorative header (date) and the interactive lines (content).
+ */
+export const JournalPage: React.FC<JournalPageProps> = ({ 
+  date, 
+  content, 
+  onChange, 
+  isEditable = false, 
+  config 
+}) => {
   return (
     <div className="responsive-scale-wrapper">
       <div className="journal-physical-page" id="journal-page">

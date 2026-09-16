@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Undo2, Redo2, Bold, Italic, Printer, Download, Upload, PanelTopClose, PanelTopOpen, Cloud, CloudOff, CloudUpload, CheckCircle2, ArrowDownRight, Image as ImageIcon, AlignLeft, AlignCenter, AlignRight, User, Heart, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Undo2, Redo2, Bold, Italic, Printer, Download, Upload, PanelTopClose, PanelTopOpen, Cloud, CloudOff, CloudUpload, CheckCircle2, ArrowDownRight, Image as ImageIcon, AlignLeft, AlignCenter, AlignRight, User, Heart, Eye, EyeOff, ChevronLeft, ChevronRight } from 'lucide-react';
 import { type JournalDocument } from '../../types/journal';
 import { type SaveStatus } from '../../storage/storageTypes';
 import { type JournalConfig, type CoverType } from '../../types/journalConfig';
@@ -9,6 +9,7 @@ import { AdvancedDialogBox } from '../ui/AdvancedDialogBox';
 import { compressImageFile } from '../../utils/imageUtils';
 import { MONTH_NAMES } from '../../utils/calendar';
 import { Dropdown } from './Dropdown';
+import { SupportModal } from '../ui/SupportModal';
 
 interface ToolbarProps {
   document: JournalDocument;
@@ -39,7 +40,12 @@ const renderSaveStatus = (status: SaveStatus) => {
 
 type TabType = 'writing' | 'covers' | 'closing-signature';
 
-export const Toolbar: React.FC<ToolbarProps> = ({
+/**
+ * Toolbar represents the global command ribbon for the journal.
+ * It provides rich-text formatting, font selection, page insertion,
+ * cover customization, and data import/export functionality.
+ */
+export const Toolbar: React.FC<ToolbarProps> = React.memo(({
   saveStatus,
   config,
   month,
@@ -49,6 +55,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onExport,
   onConfigChange
 }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
   /**
    * Manages the expanded/collapsed state of the Canva-style Ribbon UI.
    * State is persisted to localStorage to maintain user preference across sessions.
@@ -63,6 +70,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
    */
   const [activeTab, setActiveTab] = useState<TabType>('writing');
   const [activeDialog, setActiveDialog] = useState<'font' | 'covers' | 'signature' | null>(null);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('dj_ribbon_expanded', String(isExpanded));
@@ -149,7 +157,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
     return (
       <>
-        <div className="ribbon-group">
+        <div className="ribbon-group" style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
           <div className="ribbon-group-actions">
             <Dropdown 
               label={MONTH_NAMES[month - 1]}
@@ -174,7 +182,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </div>
         <div className="ribbon-divider" />
 
-        <div className="ribbon-group">
+        <div className="ribbon-group" style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
           <div className="ribbon-group-actions">
             <Tooltip content="Bold (Ctrl+B)" position="bottom">
             <button className="toolbar-btn ribbon-action-btn" onClick={() => execCmd('bold')} aria-label="Bold">
@@ -193,7 +201,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
       <div className="ribbon-divider" />
 
-      <div className="ribbon-group">
+      <div className="ribbon-group" style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
         <div className="ribbon-group-actions">
           <Dropdown 
             label={config.body.fontFamily}
@@ -219,7 +227,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
       <div className="ribbon-divider" />
 
-      <div className="ribbon-group">
+      <div className="ribbon-group" style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
         <div className="ribbon-group-actions">
           <Dropdown 
             label={config.greeting.fontFamily}
@@ -242,7 +250,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
       <div className="ribbon-divider" />
 
-      <div className="ribbon-group">
+      <div className="ribbon-group" style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
         <div className="ribbon-group-actions">
           <input 
             type="text" 
@@ -292,7 +300,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     const cv = config[target];
     return (
       <>
-        <div className="ribbon-group">
+        <div className="ribbon-group" style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
           <div className="ribbon-group-actions">
             <select 
               className="toolbar-btn"
@@ -332,7 +340,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       {renderCoverGroup('frontCover', 'Front Cover')}
       {renderCoverGroup('backCover', 'Back Cover')}
       
-      <div className="ribbon-group">
+      <div className="ribbon-group" style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
         <div className="ribbon-group-actions">
           <Tooltip content={config.showCoverText !== false ? "Hide Cover Text" : "Show Cover Text"} position="bottom">
             <button 
@@ -352,7 +360,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
   const renderClosingSignatureTab = () => (
     <>
-      <div className="ribbon-group">
+      <div className="ribbon-group" style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
         <div className="ribbon-group-actions">
           <input 
             type="text" 
@@ -388,7 +396,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
       <div className="ribbon-divider" />
 
-      <div className="ribbon-group">
+      <div className="ribbon-group" style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
         <div className="ribbon-group-actions">
           <Dropdown 
             label={config.closing.fontFamily}
@@ -422,7 +430,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
       <div className="ribbon-divider" />
 
-      <div className="ribbon-group">
+      <div className="ribbon-group" style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
         <div className="ribbon-group-actions">
           <input 
             type="text" 
@@ -460,7 +468,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       
       <div className="ribbon-divider" />
 
-      <div className="ribbon-group">
+      <div className="ribbon-group" style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
         <div className="ribbon-group-actions">
           <label className="toolbar-btn ribbon-action-btn" style={{ cursor: 'pointer', border: '1px solid #e1e4e8', borderRadius: '4px', background: '#fff' }}>
             <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'signature')} style={{ display: 'none' }} />
@@ -487,8 +495,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     <>
       <div className="unified-toolbar no-print" role="toolbar" aria-label="Editor Toolbar">
         {/* LAYER 1: Title Bar */}
-        <div className="toolbar-title-bar">
-          <div className="toolbar-group">
+        <div className="toolbar-title-bar flex items-center justify-between overflow-x-auto whitespace-nowrap scrollbar-hide w-full px-2 gap-4">
+          <div className="toolbar-group flex-shrink-0 flex items-center gap-2">
             <div className="toolbar-save-status">
               {renderSaveStatus(saveStatus)}
             </div>
@@ -505,12 +513,12 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             </Tooltip>
           </div>
           
-          <div className="header-brand" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="header-brand flex-shrink-0" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <img src="/DearestJournalLogo.png" alt="Dearest Journal Logo" style={{ height: '20px', width: 'auto' }} />
-            <span style={{ fontFamily: "'IceFontItalic', cursive", color: '#C9B8E8', fontSize: '1.25rem' }}>Dearest Journal</span>
+            <span className="mobile-hidden" style={{ fontFamily: "'IceFontItalic', cursive", color: '#C9B8E8', fontSize: '1.25rem' }}>Dearest Journal</span>
           </div>
           
-          <div className="toolbar-group">
+          <div className="toolbar-group flex-shrink-0 flex items-center gap-2">
           <a 
             href="https://allen-icee.is-a.dev" 
             target="_blank" 
@@ -518,13 +526,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             className="toolbar-btn ribbon-action-btn"
             style={{ textDecoration: 'none', color: 'inherit', fontSize: '13px' }}
           >
-            <User size={16} /> Portfolio
+            <User size={16} /> <span className="mobile-hidden">Portfolio</span>
           </a>
           <button 
             className="toolbar-btn ribbon-action-btn"
             style={{ fontSize: '13px' }}
+            onClick={() => setIsSupportModalOpen(true)}
           >
-            <Heart size={16} /> Support
+            <Heart size={16} /> <span className="mobile-hidden">Support</span>
           </button>
           <div className="toolbar-divider" style={{ height: '16px' }} />
           <Tooltip content="Import journal" position="bottom" align="right">
@@ -547,8 +556,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </div>
 
         {/* LAYER 2: Tab Row */}
-        <div className="toolbar-tab-row">
-          <div className="ribbon-tabs">
+        <div className="toolbar-tab-row flex overflow-x-auto whitespace-nowrap scrollbar-hide">
+          <div className="ribbon-tabs flex-shrink-0">
             <button 
               className={`ribbon-tab ${activeTab === 'writing' ? 'active' : ''}`}
               onClick={() => { setActiveTab('writing'); setIsExpanded(true); }}
@@ -580,10 +589,37 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
         {/* LAYER 3: Command Ribbon (Only visible when expanded) */}
         {isExpanded && (
-          <div className="toolbar-command-ribbon">
-            {activeTab === 'writing' && renderWritingTab()}
-            {activeTab === 'covers' && renderCoversTab()}
-            {activeTab === 'closing-signature' && renderClosingSignatureTab()}
+          <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center', backgroundColor: '#ffffff', borderTop: '1px solid #e5e7eb' }}>
+            
+            {/* LEFT ARROW */}
+            <button 
+              className="ribbon-scroll-arrow no-print"
+              onClick={() => scrollRef.current?.scrollBy({ left: -(scrollRef.current.clientWidth / 1.5), behavior: 'smooth' })}
+              style={{ position: 'absolute', left: '4px', zIndex: 50, backgroundColor: 'white', border: '1px solid #d1d5db', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+            >
+              <ChevronLeft size={16} />
+            </button>
+
+            {/* Scrollable Container */}
+            <div 
+              ref={scrollRef} 
+              style={{ scrollSnapType: 'x mandatory', display: 'flex', overflowX: 'auto', scrollbarWidth: 'none' }}
+              className="toolbar-command-ribbon"
+            >
+              {activeTab === 'writing' && renderWritingTab()}
+              {activeTab === 'covers' && renderCoversTab()}
+              {activeTab === 'closing-signature' && renderClosingSignatureTab()}
+            </div>
+
+            {/* RIGHT ARROW */}
+            <button 
+              className="ribbon-scroll-arrow no-print"
+              onClick={() => scrollRef.current?.scrollBy({ left: scrollRef.current.clientWidth / 1.5, behavior: 'smooth' })}
+              style={{ position: 'absolute', right: '4px', zIndex: 50, backgroundColor: 'white', border: '1px solid #d1d5db', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+            >
+              <ChevronRight size={16} />
+            </button>
+
           </div>
         )}
       </div>
@@ -595,6 +631,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         onClose={() => setActiveDialog(null)}
         onSave={(newConfig) => onConfigChange(newConfig)}
       />
+
+      <SupportModal 
+        isOpen={isSupportModalOpen} 
+        onClose={() => setIsSupportModalOpen(false)} 
+      />
     </>
   );
-};
+});
