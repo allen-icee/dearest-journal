@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Undo2, Redo2, Bold, Italic, Printer, Download, Upload, PanelTopClose, PanelTopOpen, Cloud, CloudOff, CloudUpload, CheckCircle2, ArrowDownRight, Image as ImageIcon, AlignLeft, AlignCenter, AlignRight, User, Heart, Eye, EyeOff, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Undo2, Redo2, Printer, Download, Upload, PanelTopClose, PanelTopOpen, Cloud, CloudOff, CloudUpload, CheckCircle2, ArrowDownRight, Image as ImageIcon, AlignLeft, AlignCenter, AlignRight, AlignJustify, User, Heart, Eye, EyeOff, ChevronLeft, ChevronRight } from 'lucide-react';
 import { type JournalDocument } from '../../types/journal';
 import { type SaveStatus } from '../../storage/storageTypes';
 import { type JournalConfig, type CoverType } from '../../types/journalConfig';
@@ -184,17 +184,29 @@ export const Toolbar: React.FC<ToolbarProps> = React.memo(({
 
         <div className="ribbon-group" style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
           <div className="ribbon-group-actions">
-            <Tooltip content="Bold (Ctrl+B)" position="bottom">
-            <button className="toolbar-btn ribbon-action-btn" onClick={() => execCmd('bold')} aria-label="Bold">
-              <Bold size={16} />
-            </button>
-          </Tooltip>
-          <Tooltip content="Italic (Ctrl+I)" position="bottom">
-            <button className="toolbar-btn ribbon-action-btn" onClick={() => execCmd('italic')} aria-label="Italic">
-              <Italic size={16} />
-            </button>
-          </Tooltip>
-        </div>
+            <div className="alignment-group">
+              <Tooltip content="Align Left" position="bottom">
+                <button className="alignment-btn" onClick={() => execCmd('justifyLeft')} aria-label="Align Left">
+                  <AlignLeft size={14} />
+                </button>
+              </Tooltip>
+              <Tooltip content="Align Center" position="bottom">
+                <button className="alignment-btn" onClick={() => execCmd('justifyCenter')} aria-label="Align Center">
+                  <AlignCenter size={14} />
+                </button>
+              </Tooltip>
+              <Tooltip content="Align Right" position="bottom">
+                <button className="alignment-btn" onClick={() => execCmd('justifyRight')} aria-label="Align Right">
+                  <AlignRight size={14} />
+                </button>
+              </Tooltip>
+              <Tooltip content="Justify" position="bottom">
+                <button className="alignment-btn" onClick={() => execCmd('justifyFull')} aria-label="Justify">
+                  <AlignJustify size={14} />
+                </button>
+              </Tooltip>
+            </div>
+          </div>
         <span className="ribbon-group-label">Format</span>
         <div className="dialog-box-launcher" title="Advanced Font Settings" onClick={() => setActiveDialog('font')}><ArrowDownRight size={10} /></div>
       </div>
