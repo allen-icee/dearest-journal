@@ -4,13 +4,23 @@ import { JournalClosing } from './JournalClosing';
 import { type JournalConfig } from '../types/journalConfig';
 
 interface JournalLinesProps {
-  content: string; // HTML string representing rich text
+  content: string;
   onChange?: (html: string) => void;
   isEditable?: boolean;
   config: JournalConfig;
 }
 
-export const JournalLines: React.FC<JournalLinesProps> = ({ content, onChange, isEditable = false, config }) => {
+/**
+ * JournalLines is the core editable rich-text container.
+ * It strictly enforces physical bounding limits to simulate a real piece of paper,
+ * leveraging native undo buffers to gracefully revert overflow edits.
+ */
+export const JournalLines: React.FC<JournalLinesProps> = ({ 
+  content, 
+  isEditable = false, 
+  onChange,
+  config 
+}) => {
   const textContainerRef = useRef<HTMLDivElement>(null);
   const scrollWrapperRef = useRef<HTMLDivElement>(null);
   
@@ -20,7 +30,6 @@ export const JournalLines: React.FC<JournalLinesProps> = ({ content, onChange, i
   const usableLinesCount = 32;
   const hasContent = content.length > 0;
 
-  // Sync content if it changes externally (e.g., navigating pages)
   useEffect(() => {
     if (textContainerRef.current && textContainerRef.current.innerHTML !== content) {
       textContainerRef.current.innerHTML = content;

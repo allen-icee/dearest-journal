@@ -31,7 +31,7 @@ export interface JournalConfig {
   };
   signature: {
     enabled: boolean;
-    image: string; // Built-in default path, usually public/signature/OI-DigitalSignature-Icee.png
+    image: string;
     opacity: number;
     width: string;
     offsetX: string;
@@ -49,14 +49,14 @@ export interface JournalConfig {
   frontCover: {
     type: CoverType;
     color: string;
-    image?: string; // base64 string
+    image?: string;
     imagePosition: CoverPosition;
     imageSize: CoverFit;
   };
   backCover: {
     type: CoverType;
     color: string;
-    image?: string; // base64 string
+    image?: string;
     imagePosition: CoverPosition;
     imageSize: CoverFit;
   };

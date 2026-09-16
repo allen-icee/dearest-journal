@@ -17,9 +17,9 @@ export const JOURNAL_METRICS: JournalPageMetrics = {
 };
 
 export interface JournalPageData {
-  pageNumber: number; // The physical slot number of the calendar day
-  date: string | null; // e.g., "09-14-2026"
-  content: string; // HTML rich text content
+  pageNumber: number;
+  date: string | null;
+  content: string;
 }
 
 import { type JournalConfig } from './journalConfig';
@@ -27,7 +27,7 @@ import { type JournalConfig } from './journalConfig';
 export interface JournalDocument {
   month: number;
   year: number;
-  pages: JournalPageData[]; // Exactly 32 items
+  pages: JournalPageData[];
   coverColor?: string; // Deprecated: use config.frontCover.color
   config?: JournalConfig;
 }

@@ -27,12 +27,10 @@ export const CoverColorPicker: React.FC<CoverColorPickerProps> = ({ color, onCha
   const [hexInput, setHexInput] = useState(color || DEFAULT_COVER_COLOR);
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  // Sync internal hex state when props change externally
   useEffect(() => {
     setHexInput(color || DEFAULT_COVER_COLOR);
   }, [color]);
 
-  // Handle click outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {

@@ -7,11 +7,14 @@ import { DEFAULT_JOURNAL_CONFIG } from '../config/journalDefaults';
 interface JournalCoverProps {
   month: number;
   year: number;
-  color?: string; // deprecated
   config?: JournalConfig;
 }
 
-export const JournalCover: React.FC<JournalCoverProps> = ({ month, year, config = DEFAULT_JOURNAL_CONFIG }) => {
+/**
+ * Renders the front cover of the journal, utilizing the configuration
+ * settings for either a solid color background or a custom uploaded image.
+ */
+export const JournalCover: React.FC<JournalCoverProps> = React.memo(({ month, year, config = DEFAULT_JOURNAL_CONFIG }) => {
   const monthName = MONTH_NAMES[month - 1] || "Unknown";
 
   const getBackgroundStyle = (): React.CSSProperties => {
@@ -117,4 +120,4 @@ export const JournalCover: React.FC<JournalCoverProps> = ({ month, year, config 
       </div>
     </div>
   );
-};
+});

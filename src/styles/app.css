@@ -174,9 +174,6 @@ body {
   font-style: italic;
   font-weight: bold;
   color: #ffffff;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 .advanced-dialog-overlay {
@@ -341,6 +338,7 @@ body {
   justify-content: space-between;
   height: 60px;
   position: relative;
+  flex-shrink: 0;
 }
 
 .dialog-box-launcher {
@@ -376,6 +374,7 @@ body {
   width: 1px;
   height: 60px;
   background: #e1e4e8;
+  flex-shrink: 0;
 }
 
 .toolbar-group {
@@ -1287,3 +1286,35 @@ body {
   background: #f3f4f6;
 }
 
+@media (max-width: 640px) {
+  .mobile-hidden {
+    display: none !important;
+  }
+}
+
+/* Force hide Ribbon Arrows on Desktop */
+@media (min-width: 768px) {
+  .ribbon-scroll-arrow {
+    display: none !important;
+  }
+}
+
+/* Page Navigation Container (Desktop: Edges, Mobile: Center) */
+.page-nav-container {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: 15cm !important;
+  margin: 0 auto 16px auto !important;
+  color: #e5e7eb !important;
+  padding: 0 16px !important;
+}
+
+@media (max-width: 640px) {
+  .page-nav-container {
+    justify-content: center !important;
+    gap: 24px !important;
+  }
+}

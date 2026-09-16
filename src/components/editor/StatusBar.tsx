@@ -10,7 +10,7 @@ interface StatusBarProps {
   onZoomChange: (z: number) => void;
 }
 
-export const StatusBar: React.FC<StatusBarProps> = ({ 
+export const StatusBar: React.FC<StatusBarProps> = React.memo(({ 
   isVisible, 
   activePageId,
   wordCount,
@@ -23,12 +23,16 @@ export const StatusBar: React.FC<StatusBarProps> = ({
     <div className="status-bar-wrapper no-print">
       <div className="status-bar">
         <span>{activePageId}</span>
-        <span className="status-dot">•</span>
-        <span>{wordCount} {wordCount === 1 ? 'word' : 'words'}</span>
+        {!activePageId.includes('Cover') && (
+          <>
+            <span className="status-dot">•</span>
+            <span>{wordCount} {wordCount === 1 ? 'word' : 'words'}</span>
+          </>
+        )}
 
-        <div className="toolbar-divider" style={{ height: '14px', margin: '0 0.5rem' }} />
+        <div className="toolbar-divider hidden sm:block" style={{ height: '14px', margin: '0 0.5rem' }} />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+        <div className="mobile-hidden" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           <Tooltip content="Zoom out" position="top">
             <button 
               className="toolbar-btn" 
@@ -75,4 +79,4 @@ export const StatusBar: React.FC<StatusBarProps> = ({
       </div>
     </div>
   );
-};
+});

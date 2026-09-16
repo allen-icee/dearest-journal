@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Maximize, Minimize, Info } from 'lucide-react';
 import { type JournalConfig, type CoverPosition } from '../../types/journalConfig';
 
@@ -10,6 +11,10 @@ interface AdvancedDialogBoxProps {
   onSave: (newConfig: JournalConfig) => void;
 }
 
+/**
+ * AdvancedDialogBox provides a comprehensive configuration interface
+ * for the journal's appearance, covers, signature, and typography settings.
+ */
 export const AdvancedDialogBox: React.FC<AdvancedDialogBoxProps> = ({
   isOpen,
   type,
@@ -19,7 +24,6 @@ export const AdvancedDialogBox: React.FC<AdvancedDialogBoxProps> = ({
 }) => {
   const [draftConfig, setDraftConfig] = useState<JournalConfig>(initialConfig);
 
-  // Sync draft when opened
   useEffect(() => {
     if (isOpen) {
       setDraftConfig(initialConfig);
@@ -251,9 +255,9 @@ export const AdvancedDialogBox: React.FC<AdvancedDialogBoxProps> = ({
     </>
   );
 
-  return (
+  return createPortal(
     <div className="advanced-dialog-overlay" onClick={onClose}>
-      <div className="advanced-dialog-box" onClick={e => e.stopPropagation()}>
+      <div className="advanced-dialog-box max-w-[95vw] max-h-[85svh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="advanced-dialog-header">
           <div className="advanced-dialog-title">{getTitle()}</div>
           <button className="advanced-dialog-close" onClick={onClose} aria-label="Close">
@@ -261,7 +265,7 @@ export const AdvancedDialogBox: React.FC<AdvancedDialogBoxProps> = ({
           </button>
         </div>
         
-        <div className="advanced-dialog-content">
+        <div className="advanced-dialog-content sm:p-4 p-2">
           {type === 'font' && renderFontSettings()}
           {type === 'covers' && renderCoverSettings()}
           {type === 'signature' && renderSignatureSettings()}
@@ -272,6 +276,7 @@ export const AdvancedDialogBox: React.FC<AdvancedDialogBoxProps> = ({
           <button className="dialog-btn primary" onClick={handleSave}>OK</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

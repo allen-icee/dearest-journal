@@ -2,7 +2,7 @@
  * Compresses and resizes an image file to a Data URL (base64)
  * to prevent IndexedDB from bloating excessively.
  */
-export const compressImageFile = (file: File, maxWidth = 1500, quality = 0.8): Promise<string> => {
+export const compressImageFile = (file: File, maxWidth = 1920, maxHeight = 1920, quality = 0.7): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -14,10 +14,14 @@ export const compressImageFile = (file: File, maxWidth = 1500, quality = 0.8): P
         let width = img.width;
         let height = img.height;
 
-        // Calculate aspect ratio
         if (width > maxWidth) {
           height = Math.round((height * maxWidth) / width);
           width = maxWidth;
+        }
+        
+        if (height > maxHeight) {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
         }
 
         const canvas = document.createElement('canvas');
@@ -32,7 +36,6 @@ export const compressImageFile = (file: File, maxWidth = 1500, quality = 0.8): P
 
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Use JPEG for compression if it's large, otherwise keep PNG if transparent
         const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
         const dataUrl = canvas.toDataURL(mimeType, quality);
         
