@@ -12,6 +12,7 @@ export const Signature: React.FC<SignatureProps> = ({ config }) => {
       alt="Signature" 
       className="signature-image"
       style={{
+        display: config.signature.enabled ? 'block' : 'none',
         opacity: config.signature.opacity,
         width: config.signature.width,
         right: config.signature.offsetX,
