@@ -36,7 +36,7 @@ export const JournalClosing: React.FC<JournalClosingProps> = ({ config }) => {
       
       {config.closing.enabled && (
         <div style={{ position: 'relative' }}>
-          {config.signature.enabled && <Signature config={config} />}
+          <Signature config={config} />
           
           <div 
             className="ice-font" 
