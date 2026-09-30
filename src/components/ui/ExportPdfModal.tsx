@@ -24,6 +24,7 @@ export const ExportPdfModal: React.FC<ExportPdfModalProps> = ({
   document,
   config,
 }) => {
+  const [paperFormat, setPaperFormat] = useState<'a4' | 'journal'>('a4');
   const [isGenerating, setIsGenerating] = useState(false);
   const [stagePageIndex, setStagePageIndex] = useState<number | null>(null);
   const [progressPercent, setProgressPercent] = useState(0);
@@ -109,13 +110,24 @@ export const ExportPdfModal: React.FC<ExportPdfModalProps> = ({
         await window.document.fonts.ready;
       }
 
-      // Initialize jsPDF with standard physical journal dimensions (15cm x 21.6cm)
+      const isA4 = paperFormat === 'a4';
+
+      // Initialize jsPDF:
+      // - A4 (21cm × 29.7cm): Centers the 15cm × 21.6cm journal page with margins and border outline
+      // - Journal (15cm × 21.6cm): Native page size with border outline
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'cm',
-        format: [15, 21.6],
+        format: isA4 ? 'a4' : [15, 21.6],
         compress: true,
       });
+
+      // Calculate centering offsets:
+      // A4 is 21.0cm wide x 29.7cm high. Journal is 15.0cm x 21.6cm.
+      // Left/right margin = (21.0 - 15.0) / 2 = 3.0 cm
+      // Top/bottom margin = (29.7 - 21.6) / 2 = 4.05 cm
+      const imgX = isA4 ? 3.0 : 0;
+      const imgY = isA4 ? 4.05 : 0;
 
       for (let i = 0; i < totalPages; i++) {
         if (abortRef.current) {
@@ -160,9 +172,9 @@ export const ExportPdfModal: React.FC<ExportPdfModalProps> = ({
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
         if (i > 0) {
-          pdf.addPage([15, 21.6], 'portrait');
+          pdf.addPage(isA4 ? 'a4' : [15, 21.6], 'portrait');
         }
-        pdf.addImage(imgData, 'JPEG', 0, 0, 15, 21.6, undefined, 'FAST');
+        pdf.addImage(imgData, 'JPEG', imgX, imgY, 15, 21.6, undefined, 'FAST');
 
         setProgressPercent(Math.round(((i + 1) / totalPages) * 100));
       }
@@ -170,7 +182,9 @@ export const ExportPdfModal: React.FC<ExportPdfModalProps> = ({
       if (abortRef.current) return;
 
       setStatusText('Assembling PDF download...');
-      const fileName = `DearestJournal-${document.year}-${String(document.month).padStart(2, '0')}.pdf`;
+      const fileName = isA4
+        ? `DearestJournal-${document.year}-${String(document.month).padStart(2, '0')}-A4.pdf`
+        : `DearestJournal-${document.year}-${String(document.month).padStart(2, '0')}.pdf`;
       const pdfBlob = pdf.output('blob');
 
       // 1. Primary: Native File System Access API (supported in Edge/Chrome on Windows)
@@ -347,14 +361,40 @@ export const ExportPdfModal: React.FC<ExportPdfModalProps> = ({
             ) : (
               /* Selection Options State */
               <>
-                <div style={{ marginBottom: '16px' }}>
+                <div style={{ marginBottom: '14px' }}>
                   <p style={{ margin: '0 0 4px 0', fontSize: '13px', color: '#444', lineHeight: 1.4 }}>
                     Choose how you would like to export your completed journal for <strong>{monthName} {document.year}</strong>.
                   </p>
-                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+
+                  {/* Paper Format Selector */}
+                  <div className="export-paper-selector">
+                    <span className="export-paper-label">PDF Paper Size:</span>
+                    <div className="export-paper-options">
+                      <button
+                        type="button"
+                        className={`export-paper-btn ${paperFormat === 'a4' ? 'active' : ''}`}
+                        onClick={() => setPaperFormat('a4')}
+                        title="Standard A4 sheet with cut-line border outline (Recommended for printing on A4 paper)"
+                      >
+                        A4 Paper (Centered + Cut Border)
+                      </button>
+                      <button
+                        type="button"
+                        className={`export-paper-btn ${paperFormat === 'journal' ? 'active' : ''}`}
+                        onClick={() => setPaperFormat('journal')}
+                        title="Exact 15×21.6 cm journal size with cut border"
+                      >
+                        Exact 15 × 21.6 cm
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
                     <span className="export-badge">{totalPages} Total Pages</span>
-                    <span className="export-badge">15 × 21.6 cm</span>
-                    <span className="export-badge">300 DPI Crisp</span>
+                    <span className="export-badge">
+                      {paperFormat === 'a4' ? 'A4 Sheet (21 × 29.7 cm)' : '15 × 21.6 cm Page'}
+                    </span>
+                    <span className="export-badge">Cut-Line Border Outline</span>
                   </div>
                 </div>
 
