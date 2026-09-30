@@ -10,6 +10,7 @@ import { compressImageFile } from '../../utils/imageUtils';
 import { MONTH_NAMES } from '../../utils/calendar';
 import { Dropdown } from './Dropdown';
 import { SupportModal } from '../ui/SupportModal';
+import { ExportPdfModal } from '../ui/ExportPdfModal';
 
 interface ToolbarProps {
   document: JournalDocument;
@@ -52,6 +53,7 @@ type TabType = 'writing' | 'covers' | 'closing-signature';
  * cover customization, and data import/export functionality.
  */
 export const Toolbar: React.FC<ToolbarProps> = React.memo(({
+  document,
   saveStatus,
   config,
   month,
@@ -78,6 +80,7 @@ export const Toolbar: React.FC<ToolbarProps> = React.memo(({
   const [activeTab, setActiveTab] = useState<TabType>('writing');
   const [activeDialog, setActiveDialog] = useState<'font' | 'covers' | 'signature' | null>(null);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [isExportPdfModalOpen, setIsExportPdfModalOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('dj_ribbon_expanded', String(isExpanded));
@@ -560,19 +563,23 @@ export const Toolbar: React.FC<ToolbarProps> = React.memo(({
             <Heart size={16} /> <span className="mobile-hidden">Support</span>
           </button>
           <div className="toolbar-divider" style={{ height: '16px' }} />
-          <Tooltip content="Import journal" position="bottom" align="right">
+          <Tooltip content="Import journal (JSON)" position="bottom" align="right">
             <button className="toolbar-btn ribbon-action-btn" onClick={onImport} aria-label="Import journal">
               <Upload size={16} />
             </button>
           </Tooltip>
-          <Tooltip content="Export journal" position="bottom" align="right">
+          <Tooltip content="Export journal (JSON)" position="bottom" align="right">
             <button className="toolbar-btn ribbon-action-btn" onClick={onExport} aria-label="Export journal">
               <Download size={16} />
             </button>
           </Tooltip>
           <div className="toolbar-divider" style={{ height: '16px' }} />
-          <Tooltip content="Print journal" position="bottom" align="right">
-            <button className="toolbar-btn ribbon-action-btn" onClick={() => window.print()} aria-label="Print journal">
+          <Tooltip content="Download PDF or Print" position="bottom" align="right">
+            <button 
+              className="toolbar-btn ribbon-action-btn" 
+              onClick={() => setIsExportPdfModalOpen(true)} 
+              aria-label="Download PDF or Print"
+            >
               <Printer size={16} />
             </button>
           </Tooltip>
@@ -659,6 +666,13 @@ export const Toolbar: React.FC<ToolbarProps> = React.memo(({
       <SupportModal 
         isOpen={isSupportModalOpen} 
         onClose={() => setIsSupportModalOpen(false)} 
+      />
+
+      <ExportPdfModal
+        isOpen={isExportPdfModalOpen}
+        onClose={() => setIsExportPdfModalOpen(false)}
+        document={document}
+        config={config}
       />
     </>
   );
